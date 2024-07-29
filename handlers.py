@@ -26,7 +26,7 @@ async def start_cmd(message: Message):
 
 
 @user_private_router.message(F.text.lower() == "конечно! да здравствует макаронный монстр!")
-async def with_puree(message: types.Message):
+async def buy(message: types.Message):
     await message.reply("Превосходно! Займемся делом!", reply_markup=types.ReplyKeyboardRemove())
     await message.bot.send_invoice(
         chat_id=message.chat.id,
@@ -44,7 +44,7 @@ async def with_puree(message: types.Message):
         need_email=True,
         need_phone_number=False,
         need_shipping_address=False,
-        is_flexible=False  # Убедитесь, что этот параметр установлен в False, если вы не хотите использовать гибкую цену
+        is_flexible=False
     )
 
 
@@ -63,9 +63,7 @@ async def successful_payment(message: Message):
     )
 
 
-
-
 @user_private_router.message(F.text.lower() == "спасибо, я, пожалуй, пойду")
-async def without_puree(message: types.Message):
+async def be_back(message: types.Message):
     await message.reply("Мы всегда будем ждать вас назад, ведь все дороги ведут к просветлению")
 

@@ -1,14 +1,11 @@
 import asyncio
-import os
-from aiogram import Bot, Dispatcher, types
-from aiogram.filters import CommandStart
-from handlers.common_handlers import user_private_router
+from aiogram import Bot, Dispatcher
+from handlers import user_private_router
 import logging
-from dotenv import find_dotenv, load_dotenv
-load_dotenv(find_dotenv())
+from config import BOT_TOKEN
 
 
-bot = Bot(token=os.getenv('TOKEN'))
+bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 dp.include_router(user_private_router)
 logging.basicConfig(level=logging.INFO)
