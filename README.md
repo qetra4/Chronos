@@ -7,9 +7,9 @@ TG-bot for donations to Pastafarianism created with aiogram3.
 
 
 ## Требования
-Python 3.x
-pip
-virtualenv
+- Python 3.x
+- pip
+- virtualenv
 
 ## Установка
 Переименуйте файл example_config.py в config.py и отредактируйте, если хотите настроить бота под себя.
