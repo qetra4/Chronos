@@ -2,7 +2,6 @@ import asyncio
 from create_bot import bot, dp
 from handlers.user_handler import user_router
 
-
 async def main():
     # scheduler.add_job(send_time_msg, 'interval', seconds=10)
     # scheduler.start()

@@ -42,6 +42,12 @@ class PostgresHandler:
         except Exception as e:
             print("Error while inserting data:", e)
 
+    async def get_user_data(self, user_id: int, table_name='users_reg'):
+        query = f"SELECT * FROM {table_name} WHERE user_id = $1"
+        user_data = await self.connection.fetchrow(query, user_id)
+        await self.connection.close()
+        return user_data
+
     async def select_data(self, table_name: str, where_dict: Optional[Dict[str, Any]] = None,
                           one_dict: bool = False, columns: Optional[List[str]] = None):
         cols = ', '.join(columns) if columns else '*'

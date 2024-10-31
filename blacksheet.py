@@ -3,7 +3,7 @@ from aiogram.filters import Command
 from messages import MESSAGES
 from aiogram.types import Message, LabeledPrice, PreCheckoutQuery, ContentType
 from config import *
-
+"""
 user_private_router = Router()
 
 PRICES = [
@@ -16,9 +16,6 @@ async def start_cmd(message: Message):
 
     await message.answer(MESSAGES['start'])
 
-
-
-"""
 @user_private_router.message(Command("."))
 async def start_cmd(message: Message):
     roles = [
@@ -32,7 +29,6 @@ async def start_cmd(message: Message):
         input_field_placeholder="Соглашайтесь")
 
     await message.answer(MESSAGES['start'], reply_markup=keyboard)
-"""
 
 @user_private_router.message(F.text.lower() == "конечно! да здравствует макаронный монстр!")
 async def buy(message: types.Message):
@@ -85,3 +81,4 @@ async def be_back(message: types.Message):
 @user_private_router.message(F.text.lower() == "Руководитель проекта")
 async def be_back(message: types.Message):
     await message.reply("Превосходно! Теперь мы можем работать вместе.")
+"""
