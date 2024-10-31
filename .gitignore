@@ -86,11 +86,8 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-<<<<<<< HEAD
-=======
 .ch_venv
 /ch_venv
->>>>>>> master
 
 # PyCharm
 .idea/
@@ -122,11 +119,8 @@ celerybeat.pid
 .env.production.local
 
 # Secrets
-<<<<<<< HEAD
-=======
 blacksheet.py
 
->>>>>>> master
 secrets/
 
 # Database
