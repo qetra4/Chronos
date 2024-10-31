@@ -1,16 +1,19 @@
 # Chronos
-Tg-bot (aiogram3) connected to PostgreSQL using asyncpg. Used to collect statistics data about implementation activity.\
+Tg-bot written with aiogram3. Used to collect statistics data about implementation activity.\
 It supports authorization, notifications, admin menu and data exchange with AirTable.
 
-
 ## Требования
-- Python 3.x
-- pip
-- virtualenv
-- asyncpg
-- aiogram
-- APScheduler
-- python-decouple
+Для запуска проекта вам понадобится следующее:
+
+- **Python 3.8 или выше** — для выполнения основного кода
+- **pip** — для установки зависимостей
+- **virtualenv** — для создания виртуального окружения
+
+### Зависимости Python:
+- **asyncpg** — библиотека для асинхронной работы с PostgreSQL
+- **aiogram** — фреймворк для создания Telegram-ботов
+- **APScheduler** — для планирования задач
+- **python-decouple** — для управления конфигурацией с использованием переменных окружения
 
 ## Установка
 1. Clone the repository
