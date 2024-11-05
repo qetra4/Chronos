@@ -14,7 +14,7 @@ To start the project you will need the following:
 - **aiogram**
 - **APScheduler**
 - **python-decouple**
-- 
+  
 ## Installation
 1. Clone the repository
 2. Create a virtual environment
