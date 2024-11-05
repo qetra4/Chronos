@@ -2,20 +2,20 @@
 Tg-bot written with aiogram3. Used to collect statistics data about implementation activity.\
 It supports authorization, notifications, admin menu and data exchange with AirTable.
 
-## Требования
-Для запуска проекта вам понадобится следующее:
+## Requirements
+To start the project you will need the following:
 
-- **Python 3.8 или выше** — для выполнения основного кода
-- **pip** — для установки зависимостей
-- **virtualenv** — для создания виртуального окружения
+- **Python+**
+- **pip**
+- **virtualenv**
 
-### Зависимости Python:
-- **asyncpg** — библиотека для асинхронной работы с PostgreSQL
-- **aiogram** — фреймворк для создания Telegram-ботов
-- **APScheduler** — для планирования задач
-- **python-decouple** — для управления конфигурацией с использованием переменных окружения
-
-## Установка
+### Python Dependencies:
+- **asyncpg**
+- **aiogram**
+- **APScheduler**
+- **python-decouple**
+- 
+## Installation
 1. Clone the repository
 2. Create a virtual environment
 3. Install dependencies
