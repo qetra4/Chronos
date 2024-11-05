@@ -14,8 +14,9 @@ async def start_command_handler(message: Message, state: FSMContext):
     await pg_manager.connect()
     user_info = await pg_manager.get_user_data(user_id=message.from_user.id, table_name='users')
     if user_info:
-        response_text = f'{user_info.get("full_name")}, Вижу что вы уже в моей базе данных'
-        await message.answer('вай вай вай привет брат')
+        await message.answer(MESSAGES['hello'])
+        await message.answer(MESSAGES['know_object'])
+        await state.set_state(RegistrationStates.waiting_for_object)
     else:
         await message.answer(MESSAGES['know_name'])
         await state.set_state(RegistrationStates.waiting_for_name)
@@ -24,11 +25,10 @@ async def start_command_handler(message: Message, state: FSMContext):
 @user_router.message(RegistrationStates.waiting_for_name)
 async def get_name_handler(message: Message, state: FSMContext):
     user_name = message.text
-    user_id = message.from_user.id
     await state.update_data(user_name=user_name)
-    await state.set_state(RegistrationStates.waiting_for_role)
     await message.answer(MESSAGES['know_role'],
                          reply_markup=role_kb(message.from_user.id))
+    await state.set_state(RegistrationStates.waiting_for_role)
 
 
 @user_router.message(RegistrationStates.waiting_for_role)
@@ -65,3 +65,47 @@ async def get_role_handler(message: Message, state: FSMContext):
 
     await state.clear()
     await pg_manager.close()
+
+
+@user_router.message(RegistrationStates.waiting_for_object)
+async def get_object_handler(message: Message, state: FSMContext):
+    user_object = message.text
+    await state.update_data(user_object=user_object)
+    await message.answer(MESSAGES['know_system'])
+    await state.set_state(RegistrationStates.waiting_for_system)
+
+
+@user_router.message(RegistrationStates.waiting_for_system)
+async def get_system_handler(message: Message, state: FSMContext):
+    user_system = message.text
+    await state.update_data(user_system=user_system)
+    await message.answer(MESSAGES['know_spent_time'])
+    await state.set_state(RegistrationStates.waiting_for_spent_time)
+
+
+@user_router.message(RegistrationStates.waiting_for_spent_time)
+async def get_spent_time_handler(message: Message, state: FSMContext):
+    user_spent_time = message.text
+    await state.update_data(user_name=user_spent_time)
+    await message.answer(MESSAGES['know_notes'])
+    await state.set_state(RegistrationStates.waiting_for_notes)
+
+
+@user_router.message(RegistrationStates.waiting_for_notes)
+async def get_notes_handler(message: Message, state: FSMContext):
+    user_notes = message.text
+    await state.update_data(user_name=user_notes)
+    await message.answer(MESSAGES['know_more'])
+    await state.set_state(RegistrationStates.waiting_for_more)
+
+
+@user_router.message(RegistrationStates.waiting_for_more)
+async def get_more_handler(message: Message, state: FSMContext):
+    user_more = message.text
+    await state.update_data(user_more=user_more)
+    if user_more == 'Да':
+        await message.answer(MESSAGES['know_object'])
+        await state.set_state(RegistrationStates.waiting_for_object)
+    else:
+        await message.answer(MESSAGES['goodbye'])
+
