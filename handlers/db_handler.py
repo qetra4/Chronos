@@ -13,13 +13,29 @@ class PostgresHandler:
     async def close(self):
         await self.connection.close()
 
-    async def create_table(self):
+    async def create_table_users(self):
         try:
             await self.connection.execute("""
                 CREATE TABLE IF NOT EXISTS users (
                     user_id BIGINT PRIMARY KEY,
                     full_name TEXT,
                     role TEXT
+                );
+            """)
+            print("Table created or already exists.")
+        except Exception as e:
+            print("Error while creating table:", e)
+
+    async def create_table_records(self):
+        try:
+            await self.connection.execute("""
+                CREATE TABLE IF NOT EXISTS records (
+                    record_id SERIAL PRIMARY KEY,
+                    user_id BIGINT REFERENCES users(user_id) ON DELETE CASCADE,
+                    object TEXT,
+                    system TEXT,
+                    spent_time TIME,
+                    notes TEXT
                 );
             """)
             print("Table created or already exists.")

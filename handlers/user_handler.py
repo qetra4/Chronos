@@ -48,7 +48,7 @@ async def get_role_handler(message: Message, state: FSMContext):
         await state.clear()
         return
 
-    await pg_manager.create_table()
+    await pg_manager.create_table_users()
 
     try:
         await pg_manager.insert_data(
@@ -60,10 +60,12 @@ async def get_role_handler(message: Message, state: FSMContext):
             }
         )
         await message.answer(f"Спасибо, {user_name}! Твоя роль '{user_role}' сохранена.")
+        await message.answer(MESSAGES['know_object'])
+        await state.set_state(RegistrationStates.waiting_for_object)
     except Exception as e:
         await message.answer(f"Произошла ошибка при сохранении данных: {e}")
+        await state.clear()
 
-    await state.clear()
     await pg_manager.close()
 
 
@@ -93,8 +95,32 @@ async def get_spent_time_handler(message: Message, state: FSMContext):
 
 @user_router.message(RegistrationStates.waiting_for_notes)
 async def get_notes_handler(message: Message, state: FSMContext):
+    user_id = message.from_user.id
     user_notes = message.text
+    user_data = await state.get_data()
+    user_object = user_data.get('user_object')
+    user_system = user_data.get('user_system')
+    user_spent_time = user_data.get('user_spent_time')
     await state.update_data(user_name=user_notes)
+    await pg_manager.connect()
+    await pg_manager.create_table_records()
+
+    try:
+        await pg_manager.insert_data(
+            table_name="records",
+            records_data={
+                "user_id": user_id,
+                "object": user_object,
+                "system": user_system,
+                "spent_time": user_spent_time,
+                "notes": user_notes
+            }
+        )
+    except Exception as e:
+        await message.answer(f"Произошла ошибка при сохранении данных: {e}")
+
+    await state.clear()
+    await pg_manager.close()
     await message.answer(MESSAGES['know_more'])
     await state.set_state(RegistrationStates.waiting_for_more)
 
@@ -104,6 +130,7 @@ async def get_more_handler(message: Message, state: FSMContext):
     user_more = message.text
     await state.update_data(user_more=user_more)
     if user_more == 'Да':
+        await pg_manager.connect()
         await message.answer(MESSAGES['know_object'])
         await state.set_state(RegistrationStates.waiting_for_object)
     else:
