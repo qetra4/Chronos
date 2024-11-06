@@ -22,9 +22,9 @@ class PostgresHandler:
                     role TEXT
                 );
             """)
-            print("Table created or already exists.")
+            print("Table created or already exists. users")
         except Exception as e:
-            print("Error while creating table:", e)
+            print("Error while creating table: users", e)
 
     async def create_table_records(self):
         try:
@@ -34,13 +34,13 @@ class PostgresHandler:
                     user_id BIGINT REFERENCES users(user_id) ON DELETE CASCADE,
                     object TEXT,
                     system TEXT,
-                    spent_time TIME,
+                    spent_time INT,
                     notes TEXT
                 );
             """)
-            print("Table created or already exists.")
+            print("Table created or already exists. records")
         except Exception as e:
-            print("Error while creating table:", e)
+            print("Error while creating table: records", e)
 
     async def insert_data(self, table_name: str, records_data: Dict[str, Any], conflict_column: Optional[str] = None):
         columns = ', '.join(records_data.keys())

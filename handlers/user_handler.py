@@ -13,6 +13,7 @@ user_router = Router()
 async def start_command_handler(message: Message, state: FSMContext):
     await pg_manager.connect()
     user_info = await pg_manager.get_user_data(user_id=message.from_user.id, table_name='users')
+    await pg_manager.close()
     if user_info:
         await message.answer(MESSAGES['hello'])
         await message.answer(MESSAGES['know_object'])
@@ -37,7 +38,7 @@ async def get_role_handler(message: Message, state: FSMContext):
     user_data = await state.get_data()
     user_name = user_data.get('user_name')
     user_id = message.from_user.id
-
+    await pg_manager.connect()
     if user_name is None:
         await message.answer("Произошла ошибка: не удалось получить имя пользователя.")
         await state.clear()
@@ -87,8 +88,13 @@ async def get_system_handler(message: Message, state: FSMContext):
 
 @user_router.message(RegistrationStates.waiting_for_spent_time)
 async def get_spent_time_handler(message: Message, state: FSMContext):
-    user_spent_time = message.text
-    await state.update_data(user_name=user_spent_time)
+    try:
+        user_spent_time = int(message.text)
+    except ValueError:
+        await message.answer("Пожалуйста, введите корректное число часов.")
+        return
+
+    await state.update_data(user_spent_time=user_spent_time)
     await message.answer(MESSAGES['know_notes'])
     await state.set_state(RegistrationStates.waiting_for_notes)
 
@@ -135,4 +141,5 @@ async def get_more_handler(message: Message, state: FSMContext):
         await state.set_state(RegistrationStates.waiting_for_object)
     else:
         await message.answer(MESSAGES['goodbye'])
+
 
