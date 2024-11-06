@@ -1,12 +1,38 @@
-from aiogram import Router, F
+from aiogram import Router, F, types
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from create_bot import pg_manager  # Экземпляр PostgresHandler
 from handlers.states import RegistrationStates
 from messages import MESSAGES
-from keyboards import role_kb
+from keyboards import *
 
 user_router = Router()
+
+
+@user_router.message(F.text == "/send_table_users")
+async def send_table_handler(message: types.Message):
+    await pg_manager.connect()
+    try:
+        user_data = await pg_manager.get_table('users')
+        formatted_data = "\n".join([str(row) for row in user_data])
+        await message.answer(f"Данные таблицы users:\n\n{formatted_data}", parse_mode=None)
+    except Exception as e:
+        await message.answer(f"Ошибка при получении данных таблицы: {e}")
+    finally:
+        await pg_manager.close()
+
+
+@user_router.message(F.text == "/send_table_records")
+async def send_table_handler(message: types.Message):
+    await pg_manager.connect()
+    try:
+        user_data = await pg_manager.get_table('records')
+        formatted_data = "\n".join([str(row) for row in user_data])
+        await message.answer(f"Данные таблицы records:\n\n{formatted_data}", parse_mode="None")
+    except Exception as e:
+        await message.answer(f"Ошибка при получении данных таблицы: {e}")
+    finally:
+        await pg_manager.close()
 
 
 @user_router.message(F.text == "/start")
@@ -61,7 +87,7 @@ async def get_role_handler(message: Message, state: FSMContext):
             }
         )
         await message.answer(f"Спасибо, {user_name}! Твоя роль '{user_role}' сохранена.")
-        await message.answer(MESSAGES['know_object'])
+        await message.answer(MESSAGES['know_object'], reply_markup=types.ReplyKeyboardRemove())
         await state.set_state(RegistrationStates.waiting_for_object)
     except Exception as e:
         await message.answer(f"Произошла ошибка при сохранении данных: {e}")
@@ -90,8 +116,11 @@ async def get_system_handler(message: Message, state: FSMContext):
 async def get_spent_time_handler(message: Message, state: FSMContext):
     try:
         user_spent_time = int(message.text)
+        if user_spent_time > 12 or user_spent_time < 1:
+            await message.answer("Пожалуйста, введите корректное число часов. (Число от 1 до 12)")
+            return
     except ValueError:
-        await message.answer("Пожалуйста, введите корректное число часов.")
+        await message.answer("Пожалуйста, введите корректное число часов. (Число от 1 до 12)")
         return
 
     await state.update_data(user_spent_time=user_spent_time)
@@ -127,7 +156,8 @@ async def get_notes_handler(message: Message, state: FSMContext):
 
     await state.clear()
     await pg_manager.close()
-    await message.answer(MESSAGES['know_more'])
+    await message.answer(MESSAGES['know_more'],
+                         reply_markup=yes_no_kb(message.from_user.id))
     await state.set_state(RegistrationStates.waiting_for_more)
 
 
@@ -137,9 +167,7 @@ async def get_more_handler(message: Message, state: FSMContext):
     await state.update_data(user_more=user_more)
     if user_more == 'Да':
         await pg_manager.connect()
-        await message.answer(MESSAGES['know_object'])
+        await message.answer(MESSAGES['know_object'], reply_markup=types.ReplyKeyboardRemove())
         await state.set_state(RegistrationStates.waiting_for_object)
     else:
-        await message.answer(MESSAGES['goodbye'])
-
-
+        await message.answer(MESSAGES['goodbye'], reply_markup=types.ReplyKeyboardRemove())

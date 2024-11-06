@@ -18,13 +18,13 @@ class PostgresHandler:
             await self.connection.execute("""
                 CREATE TABLE IF NOT EXISTS users (
                     user_id BIGINT PRIMARY KEY,
-                    full_name TEXT,
+                    full_name VARCHAR(50),
                     role TEXT
                 );
             """)
-            print("Table created or already exists. users")
+            print("Table users created or already exists.")
         except Exception as e:
-            print("Error while creating table: users", e)
+            print("Error while creating table users:", e)
 
     async def create_table_records(self):
         try:
@@ -35,12 +35,12 @@ class PostgresHandler:
                     object TEXT,
                     system TEXT,
                     spent_time INT,
-                    notes TEXT
+                    notes VARCHAR(255)
                 );
             """)
-            print("Table created or already exists. records")
+            print("Table records created or already exists.")
         except Exception as e:
-            print("Error while creating table: records", e)
+            print("Error while creating table records:", e)
 
     async def insert_data(self, table_name: str, records_data: Dict[str, Any], conflict_column: Optional[str] = None):
         columns = ', '.join(records_data.keys())
@@ -61,7 +61,11 @@ class PostgresHandler:
     async def get_user_data(self, user_id: int, table_name='users_reg'):
         query = f"SELECT * FROM {table_name} WHERE user_id = $1"
         user_data = await self.connection.fetchrow(query, user_id)
-        await self.connection.close()
+        return user_data
+
+    async def get_table(self, table_name):
+        query = f"SELECT * FROM {table_name}"
+        user_data = await self.connection.fetch(query)
         return user_data
 
     async def select_data(self, table_name: str, where_dict: Optional[Dict[str, Any]] = None,
