@@ -5,6 +5,7 @@ from create_bot import pg_manager
 from handlers.states import RegistrationStates
 from messages import MESSAGES
 from keyboards import *
+from decouple import config
 
 user_router = Router()
 
@@ -19,8 +20,20 @@ async def start_command_handler(message: Message, state: FSMContext):
         await message.answer(MESSAGES['know_object'])
         await state.set_state(RegistrationStates.waiting_for_object)
     else:
+        await message.answer(MESSAGES['user_pass'])
+        await state.set_state(RegistrationStates.waiting_for_password)
+
+
+@user_router.message(RegistrationStates.waiting_for_password)
+async def get_name_handler(message: Message, state: FSMContext):
+    user_pass = message.text
+    await state.update_data(user_pass=user_pass)
+    if user_pass == config('USER_PASS'):
         await message.answer(MESSAGES['know_name'])
         await state.set_state(RegistrationStates.waiting_for_name)
+    else:
+        await message.answer(MESSAGES['wrong_answer'])
+        return
 
 
 @user_router.message(RegistrationStates.waiting_for_name)
