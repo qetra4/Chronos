@@ -2,7 +2,6 @@ from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardMar
 from create_bot import admins
 
 
-
 def role_kb(user_telegram_id: int):
     kb_list = [
         [KeyboardButton(text="📝 Программист"), KeyboardButton(text="👤 Монтажник")],
