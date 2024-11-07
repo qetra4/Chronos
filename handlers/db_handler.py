@@ -68,6 +68,13 @@ class PostgresHandler:
         user_data = await self.connection.fetch(query)
         return user_data
 
+    async def get_both_tables(self):
+        query = """SELECT full_name, object, system, spent_time, notes FROM Records r
+                    JOIN Users u ON u.user_id = r.user_id;
+                    """
+        user_data = await self.connection.fetch(query)
+        return user_data
+
     async def select_data(self, table_name: str, where_dict: Optional[Dict[str, Any]] = None,
                           one_dict: bool = False, columns: Optional[List[str]] = None):
         cols = ', '.join(columns) if columns else '*'
