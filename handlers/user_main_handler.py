@@ -111,3 +111,4 @@ async def get_more_handler(message: Message, state: FSMContext):
         await state.set_state(RegistrationStates.waiting_for_object)
     else:
         await message.answer(MESSAGES['goodbye'], reply_markup=types.ReplyKeyboardRemove())
+        await state.clear()

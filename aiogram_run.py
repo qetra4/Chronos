@@ -1,7 +1,7 @@
 import asyncio
 from create_bot import bot, dp
 from handlers.user_main_handler import user_main_router
-from handlers.new_user_hadler import new_user_router
+from handlers.new_user_handler import new_user_router
 from handlers.admin_handler import admin_router
 
 
