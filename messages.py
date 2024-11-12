@@ -51,6 +51,9 @@ wrong_answer = '''
 Пароль неверный. Попробуйте еще раз.
 '''
 
+banned_message = '''
+Вы заблокированы за превышение попыток ввода пароля. Для разблокировки обратитесь к веб-девелоперу комании.
+'''
 
 MESSAGES = {
     'know_name': know_name,
@@ -66,4 +69,5 @@ MESSAGES = {
     'goodbye': goodbye,
     'user_pass': user_pass,
     'wrong_answer': wrong_answer,
+    'banned_message': banned_message,
 }

@@ -14,27 +14,40 @@ user_router = Router()
 @user_router.message(F.text == "/start")
 async def start_command_handler(message: Message, state: FSMContext):
     await pg_manager.connect()
-    user_info = await pg_manager.get_user_data(user_id=message.from_user.id, table_name='users')
-    await pg_manager.close()
-    if user_info:
-        await message.answer(MESSAGES['hello'])
-        await message.answer(MESSAGES['know_object'], reply_markup=objects_kb(message.from_user.id))
-        await state.set_state(RegistrationStates.waiting_for_object)
-    else:
-        await message.answer(MESSAGES['user_pass'])
-        await state.set_state(RegistrationStates.waiting_for_password)
+    is_user_banned = await pg_manager.is_user_banned(user_id=message.from_user.id)
+    if not is_user_banned:
+        user_info = await pg_manager.get_user_data(user_id=message.from_user.id, table_name='users')
+        await pg_manager.close()
+        if user_info:
+            await message.answer(MESSAGES['hello'])
+            await message.answer(MESSAGES['know_object'], reply_markup=objects_kb(message.from_user.id))
+            await state.set_state(RegistrationStates.waiting_for_object)
+        else:
+            await message.answer(MESSAGES['user_pass'])
+            await state.set_state(RegistrationStates.waiting_for_password)
 
 
 @user_router.message(RegistrationStates.waiting_for_password)
-async def get_name_handler(message: Message, state: FSMContext):
+async def get_password_handler(message: types.Message, state: FSMContext):
     user_pass = message.text
-    await state.update_data(user_pass=user_pass)
+    data = await state.get_data()
+    number_of_tries = data.get("number_of_tries", 0)
+
     if user_pass == config('USER_PASS'):
         await message.answer(MESSAGES['know_name'])
         await state.set_state(RegistrationStates.waiting_for_name)
     else:
-        await message.answer(MESSAGES['wrong_answer'])
-        return
+        number_of_tries += 1
+        await state.update_data(number_of_tries=number_of_tries)
+        if number_of_tries >= 3:
+            await pg_manager.connect()
+            await pg_manager.create_ban_table()
+            await pg_manager.ban_user(user_id=message.from_user.id)
+            await message.answer(MESSAGES['banned_message'])
+            await state.clear()
+            await pg_manager.close()
+        else:
+            await message.answer(MESSAGES['wrong_answer'])
 
 
 @user_router.message(RegistrationStates.waiting_for_name)

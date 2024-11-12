@@ -45,6 +45,23 @@ class PostgresHandler:
         except Exception as e:
             print("Error while creating table records:", e)
 
+    async def create_ban_table(self):
+        try:
+            await self.connection.execute("""
+             CREATE TABLE IF NOT EXISTS banned_users (
+             user_id BIGINT PRIMARY KEY
+             );
+             """)
+            print("Table ban created or already exists.")
+        except Exception as e:
+            print("Error while creating table ban:", e)
+
+    async def is_user_banned(self, user_id):
+        return await self.connection.fetchval("SELECT user_id FROM banned_users WHERE user_id = $1",user_id) is not None
+
+    async def ban_user(self, user_id):
+        await self.connection.execute("INSERT INTO banned_users (user_id) VALUES ($1) ON CONFLICT DO NOTHING", user_id)
+
     async def insert_data(self, table_name: str, records_data: Dict[str, Any], conflict_column: Optional[str] = None):
         columns = ', '.join(records_data.keys())
         values = ', '.join(f'${i + 1}' for i in range(len(records_data)))
