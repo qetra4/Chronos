@@ -19,6 +19,14 @@ know_system = '''
 Какую систему обслуживал?
 '''
 
+know_subsystem = '''
+Что это была за подсистема?
+'''
+
+know_type_of_work = '''
+Что за работу выполнял?
+'''
+
 know_spent_time = '''
 Сколько часов на нее ушло? Напиши ответ одним целым числом
 '''
@@ -51,6 +59,8 @@ MESSAGES = {
     'know_object': know_object,
     'know_system': know_system,
     'know_spent_time': know_spent_time,
+    'know_subsystem': know_subsystem,
+    'know_type_of_work': know_type_of_work,
     'know_notes': know_notes,
     'know_more': know_more,
     'goodbye': goodbye,

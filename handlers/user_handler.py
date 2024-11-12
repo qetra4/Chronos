@@ -6,6 +6,7 @@ from handlers.states import RegistrationStates
 from messages import MESSAGES
 from keyboards import *
 from decouple import config
+from datetime import *
 
 user_router = Router()
 
@@ -17,7 +18,7 @@ async def start_command_handler(message: Message, state: FSMContext):
     await pg_manager.close()
     if user_info:
         await message.answer(MESSAGES['hello'])
-        await message.answer(MESSAGES['know_object'])
+        await message.answer(MESSAGES['know_object'], reply_markup=objects_kb(message.from_user.id))
         await state.set_state(RegistrationStates.waiting_for_object)
     else:
         await message.answer(MESSAGES['user_pass'])
@@ -74,7 +75,7 @@ async def get_role_handler(message: Message, state: FSMContext):
             }
         )
         await message.answer(f"Спасибо, {user_name}! Твоя роль '{user_role}' сохранена.")
-        await message.answer(MESSAGES['know_object'], reply_markup=types.ReplyKeyboardRemove())
+        await message.answer(MESSAGES['know_object'], reply_markup=objects_kb(message.from_user.id))
         await state.set_state(RegistrationStates.waiting_for_object)
     except Exception as e:
         await message.answer(f"Произошла ошибка при сохранении данных: {e}")
@@ -87,7 +88,7 @@ async def get_role_handler(message: Message, state: FSMContext):
 async def get_object_handler(message: Message, state: FSMContext):
     user_object = message.text
     await state.update_data(user_object=user_object)
-    await message.answer(MESSAGES['know_system'])
+    await message.answer(MESSAGES['know_system'], reply_markup=systems_kb(message.from_user.id))
     await state.set_state(RegistrationStates.waiting_for_system)
 
 
@@ -95,6 +96,26 @@ async def get_object_handler(message: Message, state: FSMContext):
 async def get_system_handler(message: Message, state: FSMContext):
     user_system = message.text
     await state.update_data(user_system=user_system)
+    if user_system == "АУД - Умный дом":
+        await message.answer(MESSAGES['know_subsystem'], reply_markup=subsystems_kb(message.from_user.id))
+        await state.set_state(RegistrationStates.waiting_for_subsystem)
+    else:
+        await message.answer(MESSAGES['know_type_of_work'], reply_markup=types_of_work_kb(message.from_user.id))
+        await state.set_state(RegistrationStates.waiting_for_type_of_work)
+
+
+@user_router.message(RegistrationStates.waiting_for_subsystem)
+async def get_subsystem_handler(message: Message, state: FSMContext):
+    user_subsystem = message.text
+    await state.update_data(user_subsystem=user_subsystem)
+    await message.answer(MESSAGES['know_type_of_work'], reply_markup=types_of_work_kb(message.from_user.id))
+    await state.set_state(RegistrationStates.waiting_for_type_of_work)
+
+
+@user_router.message(RegistrationStates.waiting_for_type_of_work)
+async def get_type_of_work_handler(message: Message, state: FSMContext):
+    user_type_of_work = message.text
+    await state.update_data(user_type_of_work=user_type_of_work)
     await message.answer(MESSAGES['know_spent_time'])
     await state.set_state(RegistrationStates.waiting_for_spent_time)
 
@@ -117,11 +138,14 @@ async def get_spent_time_handler(message: Message, state: FSMContext):
 
 @user_router.message(RegistrationStates.waiting_for_notes)
 async def get_notes_handler(message: Message, state: FSMContext):
+    today = datetime.now()
     user_id = message.from_user.id
     user_notes = message.text
     user_data = await state.get_data()
     user_object = user_data.get('user_object')
     user_system = user_data.get('user_system')
+    user_subsystem = user_data.get('user_subsystem')
+    user_type_of_work = user_data.get('user_type_of_work')
     user_spent_time = user_data.get('user_spent_time')
     await state.update_data(user_name=user_notes)
     await pg_manager.connect()
@@ -134,7 +158,10 @@ async def get_notes_handler(message: Message, state: FSMContext):
                 "user_id": user_id,
                 "object": user_object,
                 "system": user_system,
+                "subsystem": user_subsystem,
+                "work_type": user_type_of_work,
                 "spent_time": user_spent_time,
+                "date": today,
                 "notes": user_notes
             }
         )
@@ -154,7 +181,7 @@ async def get_more_handler(message: Message, state: FSMContext):
     await state.update_data(user_more=user_more)
     if user_more == 'Да':
         await pg_manager.connect()
-        await message.answer(MESSAGES['know_object'], reply_markup=types.ReplyKeyboardRemove())
+        await message.answer(MESSAGES['know_object'], reply_markup=objects_kb(message.from_user.id))
         await state.set_state(RegistrationStates.waiting_for_object)
     else:
         await message.answer(MESSAGES['goodbye'], reply_markup=types.ReplyKeyboardRemove())

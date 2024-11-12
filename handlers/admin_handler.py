@@ -51,7 +51,6 @@ async def send_table_users_handler(message: types.Message):
 @admin_router.message(F.text == "/send_table_records")
 async def send_table_records_handler(message: types.Message):
     if is_admin(message.from_user.id):
-        await message.answer("Это админская команда!")
         await pg_manager.connect()
         try:
             user_data = await pg_manager.get_both_tables()

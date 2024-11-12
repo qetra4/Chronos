@@ -34,7 +34,10 @@ class PostgresHandler:
                     user_id BIGINT REFERENCES users(user_id) ON DELETE CASCADE,
                     object TEXT,
                     system TEXT,
+                    subsystem TEXT,
+                    work_type TEXT,
                     spent_time INT,
+                    date DATE,
                     notes VARCHAR(255)
                 );
             """)

@@ -7,6 +7,8 @@ class RegistrationStates(StatesGroup):
     waiting_for_role = State()
     waiting_for_object = State()
     waiting_for_system = State()
+    waiting_for_subsystem = State()
+    waiting_for_type_of_work = State()
     waiting_for_spent_time = State()
     waiting_for_notes = State()
     waiting_for_more = State()
