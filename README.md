@@ -1,6 +1,7 @@
 # Chronos
-Tg-bot written with aiogram3. Used to collect statistics data about implementation activity.\
-It supports authorization, notifications, admin menu and data exchange with AirTable.
+Tg-bot written with aiogram3. Used to collect statistics data about implementation activity.
+It supports authorization, notifications, secret allow-password for new users, admin menu and data exchange with AirTable.
+The bot can send DB tables and plots based on them to its admins.
 
 ## Requirements
 To start the project you will need the following:
