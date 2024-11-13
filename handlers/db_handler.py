@@ -63,7 +63,13 @@ class PostgresHandler:
             print("Error while creating table ban:", e)
 
     async def is_user_banned(self, user_id):
-        return await self.connection.fetchval("SELECT user_id FROM banned_users WHERE user_id = $1",user_id) is not None
+        return await self.connection.fetchval("SELECT user_id FROM banned_users WHERE user_id = $1",
+                                              user_id) is not None
+
+    async def is_user_record_today(self, user_id, today):
+        print(user_id, today)
+        return await self.connection.fetchval("SELECT record_id FROM records WHERE user_id = $1 AND date = $2",
+                                              user_id, today) is not None
 
     async def ban_user(self, user_id):
         await self.connection.execute("INSERT INTO banned_users (user_id) VALUES ($1) ON CONFLICT DO NOTHING", user_id)

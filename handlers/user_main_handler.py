@@ -5,7 +5,7 @@ from create_bot import pg_manager
 from handlers.states import RegistrationStates
 from messages import MESSAGES
 from keyboards import *
-from datetime import *
+from datetime import datetime
 
 user_main_router = Router()
 

@@ -14,7 +14,6 @@ new_user_router = Router()
 async def start_command_handler(message: Message, state: FSMContext):
     await pg_manager.connect()
     is_user_banned = await pg_manager.is_user_banned(user_id=message.from_user.id)
-    print('sds')
     if not is_user_banned:
         user_info = await pg_manager.get_user_data(user_id=message.from_user.id, table_name='users')
         if user_info:
@@ -95,4 +94,3 @@ async def get_role_handler(message: Message, state: FSMContext):
         await state.clear()
 
     await pg_manager.close()
-
