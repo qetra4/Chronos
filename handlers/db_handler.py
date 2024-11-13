@@ -26,6 +26,12 @@ class PostgresHandler:
         except Exception as e:
             print("Error while creating table users:", e)
 
+    async def get_all_user_ids(self):
+        query = "SELECT user_id FROM users;"
+        rows = await self.connection.fetch(query)
+        user_ids = [row['user_id'] for row in rows]
+        return user_ids
+
     async def create_table_records(self):
         try:
             await self.connection.execute("""
