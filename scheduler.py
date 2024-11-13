@@ -25,13 +25,19 @@ def setup_scheduler(bot: Bot, pg_manager: PostgresHandler):
 
     scheduler.add_job(
         send_daily_notifications,
-        CronTrigger(day_of_week="mon-fri", hour=12, minute=5),
+        CronTrigger(day_of_week="mon-fri", hour=19, minute=00),
         args=[bot, pg_manager]
     )
 
     scheduler.add_job(
         send_daily_notifications,
-        CronTrigger(day_of_week="mon-fri", hour=12, minute=7),
+        CronTrigger(day_of_week="mon-fri", hour=19, minute=25),
+        args=[bot, pg_manager]
+    )
+
+    scheduler.add_job(
+        send_daily_notifications,
+        CronTrigger(day_of_week="mon-fri", hour=19, minute=50),
         args=[bot, pg_manager]
     )
 
