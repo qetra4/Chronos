@@ -14,7 +14,7 @@ user_main_router = Router()
 async def get_info_handler(message: Message, state: FSMContext):
     user_info = message.text
     await state.update_data(user_info=user_info)
-    if user_info == 'Да':
+    if user_info == 'Да, расскажу':
         await message.answer(MESSAGES['know_object'], reply_markup=objects_kb(message.from_user.id))
         await state.set_state(RegistrationStates.waiting_for_object)
     else:
@@ -113,6 +113,7 @@ async def get_notes_handler(message: Message, state: FSMContext):
     else:
         await state.clear()
         await message.answer(MESSAGES['goodbye'])
+
 
 
 @user_main_router.message(RegistrationStates.waiting_for_more)
