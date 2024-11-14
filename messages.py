@@ -55,6 +55,14 @@ banned_message = '''
 Вы заблокированы за превышение попыток ввода пароля. Для разблокировки обратитесь к веб-девелоперу комании.
 '''
 
+intention_message = '''
+Расскажешь, что делал сегодня? Можешь отказаться и заполнить позже, тогда нужно будет только указать причину, почему.
+'''
+
+why_not = '''
+Собственно, почему? Опиши вкратце.
+'''
+
 MESSAGES = {
     'know_name': know_name,
     'know_role': know_role,
@@ -70,4 +78,6 @@ MESSAGES = {
     'user_pass': user_pass,
     'wrong_answer': wrong_answer,
     'banned_message': banned_message,
+    'intention_message': intention_message,
+    'why_not': why_not,
 }

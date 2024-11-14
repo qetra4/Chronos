@@ -1,4 +1,4 @@
-from aiogram import Router, F, types
+from aiogram import Router, types
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from create_bot import pg_manager
@@ -8,6 +8,18 @@ from keyboards import *
 from datetime import datetime
 
 user_main_router = Router()
+
+
+@user_main_router.message(RegistrationStates.waiting_for_info)
+async def get_info_handler(message: Message, state: FSMContext):
+    user_info = message.text
+    await state.update_data(user_info=user_info)
+    if user_info == 'Да':
+        await message.answer(MESSAGES['know_object'], reply_markup=objects_kb(message.from_user.id))
+        await state.set_state(RegistrationStates.waiting_for_object)
+    else:
+        await message.answer(MESSAGES['why_not'], reply_markup=types.ReplyKeyboardRemove())
+        await state.set_state(RegistrationStates.waiting_for_notes)
 
 
 @user_main_router.message(RegistrationStates.waiting_for_object)
@@ -93,12 +105,14 @@ async def get_notes_handler(message: Message, state: FSMContext):
         )
     except Exception as e:
         await message.answer(f"Произошла ошибка при сохранении данных: {e}")
-
-    await state.clear()
-    await pg_manager.close()
-    await message.answer(MESSAGES['know_more'],
-                         reply_markup=yes_no_kb(message.from_user.id))
-    await state.set_state(RegistrationStates.waiting_for_more)
+    if user_object is not None:
+        await state.clear()
+        await message.answer(MESSAGES['know_more'],
+                             reply_markup=yes_no_kb(message.from_user.id))
+        await state.set_state(RegistrationStates.waiting_for_more)
+    else:
+        await state.clear()
+        await message.answer(MESSAGES['goodbye'])
 
 
 @user_main_router.message(RegistrationStates.waiting_for_more)

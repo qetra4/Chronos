@@ -13,3 +13,4 @@ class RegistrationStates(StatesGroup):
     waiting_for_notes = State()
     waiting_for_more = State()
     waiting_for_password = State()
+    waiting_for_info = State()

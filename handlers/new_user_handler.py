@@ -18,8 +18,8 @@ async def start_command_handler(message: Message, state: FSMContext):
         user_info = await pg_manager.get_user_data(user_id=message.from_user.id, table_name='users')
         if user_info:
             await message.answer(MESSAGES['hello'])
-            await message.answer(MESSAGES['know_object'], reply_markup=objects_kb(message.from_user.id))
-            await state.set_state(RegistrationStates.waiting_for_object)
+            await message.answer(MESSAGES['intention_message'], reply_markup=tell_info_kb(message.from_user.id))
+            await state.set_state(RegistrationStates.waiting_for_info)
         else:
             await message.answer(MESSAGES['user_pass'])
             await state.set_state(RegistrationStates.waiting_for_password)
