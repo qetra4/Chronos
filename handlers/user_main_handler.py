@@ -85,7 +85,6 @@ async def get_notes_handler(message: Message, state: FSMContext):
     user_subsystem = user_data.get('user_subsystem')
     user_type_of_work = user_data.get('user_type_of_work')
     user_spent_time = user_data.get('user_spent_time')
-    await state.update_data(user_name=user_notes)
     await pg_manager.connect()
     await pg_manager.create_table_records()
 
@@ -113,7 +112,6 @@ async def get_notes_handler(message: Message, state: FSMContext):
     else:
         await state.clear()
         await message.answer(MESSAGES['goodbye'])
-
 
 
 @user_main_router.message(RegistrationStates.waiting_for_more)

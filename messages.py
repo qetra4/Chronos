@@ -63,6 +63,30 @@ why_not = '''
 Собственно, почему? Опиши вкратце.
 '''
 
+notifications_time = '''
+Здесь ты можешь установить удобное время для напоминалок от меня.
+Вначале я попрошу указать тебя час в пределах 0-23, потом минуты в пределах 0-59. 
+То есть, чтобы поставить уведомления на 12:05, нужно вначале отправить 12, затем 5.
+Итак, пиши час.
+'''
+
+got_hours = '''
+Отлично. Теперь вводи минуты
+'''
+
+value_error = '''
+Вводи числовое значение -_-
+'''
+
+diaposon_error_hours = '''
+Час должен быть в пределах 0-23 -_-
+'''
+
+diaposon_error_minutes = '''
+Минуты должны быть в пределах 0-59 -_-
+'''
+
+
 MESSAGES = {
     'know_name': know_name,
     'know_role': know_role,
@@ -80,4 +104,9 @@ MESSAGES = {
     'banned_message': banned_message,
     'intention_message': intention_message,
     'why_not': why_not,
+    'notifications_time': notifications_time,
+    'got_hours': got_hours,
+    'value_error': value_error,
+    'diaposon_error_hours': diaposon_error_hours,
+    'diaposon_error_minutes': diaposon_error_minutes,
 }

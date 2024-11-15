@@ -6,6 +6,37 @@ class PostgresHandler:
     def __init__(self, dsn: str):
         print("Initializing connection to the database with DSN:", dsn)
         self.dsn = dsn
+        self.connection = None
+        self.pool = None
+
+    async def setup_pool(self):
+        """Setup connection pool."""
+        self.pool = await asyncpg.create_pool(self.dsn)
+
+    async def get_all_user_ids(self):
+        async with self.pool.acquire() as connection:
+            records = await connection.fetch("SELECT user_id FROM users")
+            return [record['user_id'] for record in records]
+
+    async def get_users_with_custom_notifications(self):
+        async with self.pool.acquire() as connection:
+            records = await connection.fetch("SELECT user_id FROM notifications")
+            return [record['user_id'] for record in records]
+
+    async def get_notifications_data(self, table_name='notifications'):
+        async with self.pool.acquire() as connection:
+            query = f"SELECT user_id, hour, minutes FROM {table_name} WHERE hour IS NOT NULL AND minutes IS NOT NULL"
+            rows = await connection.fetch(query)
+            user_data = {row['user_id']: {'hour': row['hour'], 'minutes': row['minutes']} for row in rows}
+            return user_data
+
+    async def is_user_record_today(self, user_id, date):
+        async with self.pool.acquire() as connection:
+            result = await connection.fetchval(
+                "SELECT EXISTS(SELECT 1 FROM records WHERE user_id = $1 AND date = $2)",
+                user_id, date
+            )
+            return result
 
     async def connect(self):
         self.connection = await asyncpg.connect(self.dsn)
@@ -26,11 +57,11 @@ class PostgresHandler:
         except Exception as e:
             print("Error while creating table users:", e)
 
-    async def get_all_user_ids(self):
-        query = "SELECT user_id FROM users;"
-        rows = await self.connection.fetch(query)
-        user_ids = [row['user_id'] for row in rows]
-        return user_ids
+#    async def get_all_user_ids(self):
+#        query = "SELECT user_id FROM users;"
+#        rows = await self.connection.fetch(query)
+#        user_ids = [row['user_id'] for row in rows]
+#        return user_ids
 
     async def create_table_records(self):
         try:
@@ -51,6 +82,38 @@ class PostgresHandler:
         except Exception as e:
             print("Error while creating table records:", e)
 
+    async def create_notifications_table(self):
+        try:
+            await self.connection.execute("""
+             CREATE TABLE IF NOT EXISTS notifications (
+                not_data_id SERIAL PRIMARY KEY,
+                user_id BIGINT REFERENCES users(user_id) ON DELETE CASCADE,
+                hour INT,
+                minutes INT
+             );
+             """)
+            print("Table ban created or already exists.")
+        except Exception as e:
+            print("Error while creating table ban:", e)
+
+
+    # Получение списка пользователей с индивидуальными настройками уведомлений
+#    async def get_users_with_custom_notifications(self, table_name='notifications'):
+#        query = f"SELECT user_id FROM {table_name} WHERE hour IS NOT NULL AND minutes IS NOT NULL"
+#        rows = await self.connection.fetch(query)
+#        # Возвращаем список user_id для пользователей с кастомными уведомлениями
+#        user_ids = [row['user_id'] for row in rows]
+#        return user_ids
+
+    async def has_user_set_notifications(self, user_id, today):
+        return await self.connection.fetchval("SELECT hour FROM notifications WHERE user_id = $1",
+                                              user_id) is not None
+
+#    async def get_notifications_data(self, user_id: int, table_name='users_reg'):
+#        query = f"SELECT hour, minutes FROM {table_name} WHERE user_id = $1"
+#        user_data = await self.connection.fetchrow(query, user_id)
+#        return user_data
+
     async def create_ban_table(self):
         try:
             await self.connection.execute("""
@@ -66,10 +129,9 @@ class PostgresHandler:
         return await self.connection.fetchval("SELECT user_id FROM banned_users WHERE user_id = $1",
                                               user_id) is not None
 
-    async def is_user_record_today(self, user_id, today):
-        print(user_id, today)
-        return await self.connection.fetchval("SELECT record_id FROM records WHERE user_id = $1 AND date = $2",
-                                              user_id, today) is not None
+#    async def is_user_record_today(self, user_id, today):
+#        return await self.connection.fetchval("SELECT record_id FROM records WHERE user_id = $1 AND date = $2",
+#                                              user_id, today) is not None
 
     async def ban_user(self, user_id):
         await self.connection.execute("INSERT INTO banned_users (user_id) VALUES ($1) ON CONFLICT DO NOTHING", user_id)
