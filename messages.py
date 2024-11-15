@@ -86,6 +86,14 @@ diaposon_error_minutes = '''
 Минуты должны быть в пределах 0-59 -_-
 '''
 
+admin_choose_option = '''
+Привет, Стас :) Что мне для тебя сделать?
+'''
+
+admin_choose_table = '''
+Какая таблица тебя интересует?
+'''
+
 
 MESSAGES = {
     'know_name': know_name,
@@ -109,4 +117,6 @@ MESSAGES = {
     'value_error': value_error,
     'diaposon_error_hours': diaposon_error_hours,
     'diaposon_error_minutes': diaposon_error_minutes,
+    'admin_choose_option': admin_choose_option,
+    'admin_choose_table': admin_choose_table,
 }

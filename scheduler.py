@@ -15,13 +15,16 @@ async def schedule_user_notifications(bot: Bot, pg_manager: PostgresHandler):
     """Schedule user-specific notifications."""
     scheduler = AsyncIOScheduler(timezone="UTC")
     async with pg_manager.pool.acquire() as connection:
+        today_date = datetime.now().date()
         user_data = await connection.fetch("SELECT user_id, hour, minutes FROM notifications")
         for record in user_data:
-            scheduler.add_job(
-                send_notification,
-                CronTrigger(day_of_week="mon-fri", hour=record["hour"], minute=record["minutes"]),
-                args=[record["user_id"]]
-            )
+            is_record_user_today = await pg_manager.is_user_record_today(record["user_id"], today_date)
+            if not is_record_user_today:
+                scheduler.add_job(
+                    send_notification,
+                    CronTrigger(day_of_week="mon-fri", hour=record["hour"], minute=record["minutes"]),
+                    args=[record["user_id"]]
+                )
     scheduler.start()
 
 

@@ -57,12 +57,6 @@ class PostgresHandler:
         except Exception as e:
             print("Error while creating table users:", e)
 
-#    async def get_all_user_ids(self):
-#        query = "SELECT user_id FROM users;"
-#        rows = await self.connection.fetch(query)
-#        user_ids = [row['user_id'] for row in rows]
-#        return user_ids
-
     async def create_table_records(self):
         try:
             await self.connection.execute("""
@@ -96,23 +90,9 @@ class PostgresHandler:
         except Exception as e:
             print("Error while creating table ban:", e)
 
-
-    # Получение списка пользователей с индивидуальными настройками уведомлений
-#    async def get_users_with_custom_notifications(self, table_name='notifications'):
-#        query = f"SELECT user_id FROM {table_name} WHERE hour IS NOT NULL AND minutes IS NOT NULL"
-#        rows = await self.connection.fetch(query)
-#        # Возвращаем список user_id для пользователей с кастомными уведомлениями
-#        user_ids = [row['user_id'] for row in rows]
-#        return user_ids
-
     async def has_user_set_notifications(self, user_id, today):
         return await self.connection.fetchval("SELECT hour FROM notifications WHERE user_id = $1",
                                               user_id) is not None
-
-#    async def get_notifications_data(self, user_id: int, table_name='users_reg'):
-#        query = f"SELECT hour, minutes FROM {table_name} WHERE user_id = $1"
-#        user_data = await self.connection.fetchrow(query, user_id)
-#        return user_data
 
     async def create_ban_table(self):
         try:
@@ -128,10 +108,6 @@ class PostgresHandler:
     async def is_user_banned(self, user_id):
         return await self.connection.fetchval("SELECT user_id FROM banned_users WHERE user_id = $1",
                                               user_id) is not None
-
-#    async def is_user_record_today(self, user_id, today):
-#        return await self.connection.fetchval("SELECT record_id FROM records WHERE user_id = $1 AND date = $2",
-#                                              user_id, today) is not None
 
     async def ban_user(self, user_id):
         await self.connection.execute("INSERT INTO banned_users (user_id) VALUES ($1) ON CONFLICT DO NOTHING", user_id)

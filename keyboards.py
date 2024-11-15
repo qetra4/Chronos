@@ -68,3 +68,20 @@ def types_of_work_kb(user_telegram_id: int):
     ]
     keyboard = ReplyKeyboardMarkup(keyboard=kb_list, resize_keyboard=True, one_time_keyboard=True)
     return keyboard
+
+
+def admin_choose_kb(user_telegram_id: int):
+    kb_list = [
+        [KeyboardButton(text="Отобрази таблицу"), KeyboardButton(text="Покажи график")]
+    ]
+    keyboard = ReplyKeyboardMarkup(keyboard=kb_list, resize_keyboard=True, one_time_keyboard=True)
+    return keyboard
+
+
+def admin_choose_table_kb(user_telegram_id: int):
+    kb_list = [
+        [KeyboardButton(text="Таблица Users"), KeyboardButton(text="Таблица Records")],
+        [KeyboardButton(text="Таблица Banned Users"), KeyboardButton(text="Таблица Notifications")]
+    ]
+    keyboard = ReplyKeyboardMarkup(keyboard=kb_list, resize_keyboard=True, one_time_keyboard=True)
+    return keyboard

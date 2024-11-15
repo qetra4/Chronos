@@ -16,3 +16,8 @@ class RegistrationStates(StatesGroup):
     waiting_for_notification_chose = State()
     waiting_for_hour = State()
     waiting_for_minute = State()
+    waiting_for_admin_chose = State()
+    waiting_for_admin_table = State()
+    waiting_for_admin_diagram = State()
+    send_table_users = State()
+    send_table_records = State()

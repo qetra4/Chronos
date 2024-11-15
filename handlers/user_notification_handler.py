@@ -17,10 +17,10 @@ async def set_notifications_command_handler(message: Message, state: FSMContext)
     if not is_user_banned:
         user_info = await pg_manager.get_user_data(user_id=message.from_user.id, table_name='users')
         if user_info:
-            await message.answer(MESSAGES['notifications_time'])
+            await message.answer(MESSAGES['notifications_time'], reply_markup=types.ReplyKeyboardRemove())
             await state.set_state(RegistrationStates.waiting_for_hour)
         else:
-            await message.answer(MESSAGES['user_pass'])
+            await message.answer(MESSAGES['user_pass'], reply_markup=types.ReplyKeyboardRemove())
             await state.set_state(RegistrationStates.waiting_for_password)
     await pg_manager.close()
 
