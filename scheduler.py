@@ -1,4 +1,4 @@
-from handlers.db_handler import PostgresHandler
+from handlers.handler_db import PostgresHandler
 from create_bot import bot
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger

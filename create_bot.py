@@ -5,7 +5,7 @@ from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from decouple import config
-from handlers.db_handler import PostgresHandler
+from handlers.handler_db import PostgresHandler
 
 
 pg_manager = PostgresHandler(config('PG_LINK'))

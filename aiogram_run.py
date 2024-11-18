@@ -2,10 +2,10 @@ import asyncio
 from create_bot import bot, dp
 from scheduler import setup_scheduler
 from create_bot import pg_manager
-from handlers.user_main_handler import user_main_router
-from handlers.new_user_handler import new_user_router
-from handlers.admin_handler import admin_router
-from handlers.user_notification_handler import notification_user_router
+from handlers.handler_main_user import user_main_router
+from handlers.handler_new_user import new_user_router
+from handlers.handler_admin import admin_router
+from handlers.handler_user_notification import notification_user_router
 
 
 async def main():

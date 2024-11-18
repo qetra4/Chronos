@@ -138,9 +138,16 @@ class PostgresHandler:
         user_data = await self.connection.fetch(query)
         return user_data
 
-    async def get_both_tables(self):
-        query = """SELECT full_name, object, system, spent_time, notes FROM Records r
+    async def get_users_and_records_tables(self):
+        query = """SELECT full_name, object, system, subsystem, spent_time, work_type, date, notes FROM Records r
                     JOIN Users u ON u.user_id = r.user_id;
+                    """
+        user_data = await self.connection.fetch(query)
+        return user_data
+
+    async def get_users_and_notifications_tables(self):
+        query = """SELECT full_name, hour, minutes FROM Notifications n
+                    JOIN Users u ON u.user_id = n.user_id;
                     """
         user_data = await self.connection.fetch(query)
         return user_data
