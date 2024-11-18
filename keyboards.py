@@ -72,7 +72,25 @@ def types_of_work_kb(user_telegram_id: int):
 
 def admin_choose_kb(user_telegram_id: int):
     kb_list = [
-        [KeyboardButton(text="Отобрази таблицу"), KeyboardButton(text="Покажи график")]
+        [KeyboardButton(text="Отобрази таблицу"), KeyboardButton(text="Покажи график")],
+        [KeyboardButton(text="Открой keyboards-редактор")]
+    ]
+    keyboard = ReplyKeyboardMarkup(keyboard=kb_list, resize_keyboard=True, one_time_keyboard=True)
+    return keyboard
+
+
+def admin_choose_kb_kb(user_telegram_id: int):
+    kb_list = [
+        [KeyboardButton(text="Объекты"), KeyboardButton(text="Системы")],
+        [KeyboardButton(text="Подсистемы"), KeyboardButton(text="Тип работы")]
+    ]
+    keyboard = ReplyKeyboardMarkup(keyboard=kb_list, resize_keyboard=True, one_time_keyboard=True)
+    return keyboard
+
+
+def admin_way_to_edit_kb(user_telegram_id: int):
+    kb_list = [
+        [KeyboardButton(text="Создать кнопку"), KeyboardButton(text="Удалить кнопку")]
     ]
     keyboard = ReplyKeyboardMarkup(keyboard=kb_list, resize_keyboard=True, one_time_keyboard=True)
     return keyboard

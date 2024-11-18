@@ -105,6 +105,54 @@ class PostgresHandler:
         except Exception as e:
             print("Error while creating table ban:", e)
 
+    async def create_objects_table(self):
+        try:
+            await self.connection.execute("""
+             CREATE TABLE IF NOT EXISTS objects (
+             object_id SERIAL PRIMARY KEY,
+             object_name VARCHAR
+             );
+             """)
+            print("Table ban created or already exists.")
+        except Exception as e:
+            print("Error while creating table ban:", e)
+
+    async def create_systems_table(self):
+        try:
+            await self.connection.execute("""
+             CREATE TABLE IF NOT EXISTS systems (
+             system_id SERIAL PRIMARY KEY,
+             system_name VARCHAR
+             );
+             """)
+            print("Table ban created or already exists.")
+        except Exception as e:
+            print("Error while creating table ban:", e)
+
+    async def create_subsystems_table(self):
+        try:
+            await self.connection.execute("""
+             CREATE TABLE IF NOT EXISTS subsystems (
+             subsystem_id SERIAL PRIMARY KEY,
+             subsystem_name VARCHAR
+             );
+             """)
+            print("Table ban created or already exists.")
+        except Exception as e:
+            print("Error while creating table ban:", e)
+
+    async def create_types_of_works_table(self):
+        try:
+            await self.connection.execute("""
+             CREATE TABLE IF NOT EXISTS type_of_works (
+             type_of_work_id SERIAL PRIMARY KEY,
+             type_of_work_name VARCHAR
+             );
+             """)
+            print("Table ban created or already exists.")
+        except Exception as e:
+            print("Error while creating table ban:", e)
+
     async def is_user_banned(self, user_id):
         return await self.connection.fetchval("SELECT user_id FROM banned_users WHERE user_id = $1",
                                               user_id) is not None

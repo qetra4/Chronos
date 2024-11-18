@@ -94,6 +94,22 @@ admin_choose_table = '''
 Какая таблица тебя интересует?
 '''
 
+admin_choose_keyboard = '''
+Какую из клавиатур будем редактировать?
+'''
+
+admin_how_to_edit_keyboard = '''
+Что нужно сделать?
+'''
+
+delete_button = '''
+Нажми на кнопку, которую хочешь удалить
+'''
+
+create_button = '''
+Напиши название новой кнопки
+'''
+
 
 MESSAGES = {
     'know_name': know_name,
@@ -119,4 +135,8 @@ MESSAGES = {
     'diaposon_error_minutes': diaposon_error_minutes,
     'admin_choose_option': admin_choose_option,
     'admin_choose_table': admin_choose_table,
+    'admin_choose_keyboard': admin_choose_keyboard,
+    'admin_how_to_edit_keyboard': admin_how_to_edit_keyboard,
+    'delete_button': delete_button,
+    'create_button': create_button,
 }
