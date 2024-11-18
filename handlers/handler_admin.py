@@ -51,13 +51,22 @@ async def admin_choose_table_handler(message: types.Message, state: FSMContext):
     admin_table = message.text
     await state.update_data(admin_table=admin_table)
     if admin_table == 'Таблица Users':
-        await send_table_users_handler(message)
+        await send_table_users(message)
     elif admin_table == 'Таблица Records':
-        await send_table_records_handler(message)
+        await send_table_records(message)
     elif admin_table == 'Таблица Banned Users':
-        await send_table_banned_users_handler(message)
+        await send_table_banned_users(message)
     elif admin_table == 'Таблица Notifications':
-        await send_table_notifications_handler(message)
+        await send_table_notifications(message)
+    elif admin_table == 'Таблица Objects':
+        await send_table_objects(message)
+    elif admin_table == 'Таблица Systems':
+        await send_table_systems(message)
+    elif admin_table == 'Таблица Subsystems':
+        await send_table_subsystems(message)
+    elif admin_table == 'Таблица Types_of_work':
+        await send_table_types_of_work(message)
+
 
 
 @admin_router.message(RegistrationStates.waiting_for_admin_keyboard_choose)

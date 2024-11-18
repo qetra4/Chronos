@@ -12,7 +12,7 @@ def is_admin(user_id):
     return user_id in admins
 
 
-async def send_table_users_handler(message: types.Message):
+async def send_table_users(message: types.Message):
     if is_admin(message.from_user.id):
         await pg_manager.connect()
         try:
@@ -45,7 +45,7 @@ async def send_table_users_handler(message: types.Message):
         await message.answer("Недостаточно прав.")
 
 
-async def send_table_records_handler(message: types.Message):
+async def send_table_records(message: types.Message):
     if is_admin(message.from_user.id):
         await pg_manager.connect()
         try:
@@ -85,7 +85,7 @@ async def send_table_records_handler(message: types.Message):
         await message.answer("Недостаточно прав.")
 
 
-async def send_table_banned_users_handler(message: types.Message):
+async def send_table_banned_users(message: types.Message):
     if is_admin(message.from_user.id):
         await pg_manager.connect()
         try:
@@ -114,7 +114,7 @@ async def send_table_banned_users_handler(message: types.Message):
         await message.answer("Недостаточно прав.")
 
 
-async def send_table_notifications_handler(message: types.Message):
+async def send_table_notifications(message: types.Message):
     if is_admin(message.from_user.id):
         await pg_manager.connect()
         try:
@@ -138,6 +138,118 @@ async def send_table_notifications_handler(message: types.Message):
 
             formatted_data = "\n".join([header_row] + formatted_rows)
             await message.answer(f"Данные таблицы users:\n\n```{formatted_data}```", parse_mode="Markdown")
+
+        except Exception as e:
+            await message.answer(f"Ошибка при получении данных таблицы: {e}")
+        finally:
+            await pg_manager.close()
+    else:
+        await message.answer("Недостаточно прав.")
+
+
+async def send_table_objects(message: types.Message):
+    if is_admin(message.from_user.id):
+        await pg_manager.connect()
+        try:
+            user_data = await pg_manager.get_table('objects')
+            headers = ["Objects"]
+            column_widths = [12, 25, 20, 15]
+
+            header_row = (
+                f"{headers[0].ljust(column_widths[3])}"
+            )
+
+            formatted_rows = [
+                f"{str(record['object_name']).ljust(column_widths[0])}"
+                for record in user_data
+            ]
+
+            formatted_data = "\n".join([header_row] + formatted_rows)
+            await message.answer(f"Данные таблицы objects:\n\n```{formatted_data}```", parse_mode="Markdown")
+
+        except Exception as e:
+            await message.answer(f"Ошибка при получении данных таблицы: {e}")
+        finally:
+            await pg_manager.close()
+    else:
+        await message.answer("Недостаточно прав.")
+
+
+async def send_table_systems(message: types.Message):
+    if is_admin(message.from_user.id):
+        await pg_manager.connect()
+        try:
+            user_data = await pg_manager.get_table('systems')
+            headers = ["Systems"]
+            column_widths = [12, 25, 20, 15]
+
+            header_row = (
+                f"{headers[0].ljust(column_widths[3])}"
+            )
+
+            formatted_rows = [
+                f"{str(record['system_name']).ljust(column_widths[0])}"
+                for record in user_data
+            ]
+
+            formatted_data = "\n".join([header_row] + formatted_rows)
+            await message.answer(f"Данные таблицы systems:\n\n```{formatted_data}```", parse_mode="Markdown")
+
+        except Exception as e:
+            await message.answer(f"Ошибка при получении данных таблицы: {e}")
+        finally:
+            await pg_manager.close()
+    else:
+        await message.answer("Недостаточно прав.")
+
+
+async def send_table_subsystems(message: types.Message):
+    if is_admin(message.from_user.id):
+        await pg_manager.connect()
+        try:
+            user_data = await pg_manager.get_table('subsystems')
+            headers = ["Subsystems"]
+            column_widths = [12, 25, 20, 15]
+
+            header_row = (
+                f"{headers[0].ljust(column_widths[3])}"
+            )
+
+            formatted_rows = [
+                f"{str(record['subsystem_name']).ljust(column_widths[0])}"
+                for record in user_data
+            ]
+
+            formatted_data = "\n".join([header_row] + formatted_rows)
+            await message.answer(f"Данные таблицы subsystems:\n\n```{formatted_data}```", parse_mode="Markdown")
+
+        except Exception as e:
+            await message.answer(f"Ошибка при получении данных таблицы: {e}")
+        finally:
+            await pg_manager.close()
+    else:
+        await message.answer("Недостаточно прав.")
+
+
+async def send_table_types_of_work(message: types.Message):
+    if is_admin(message.from_user.id):
+        await pg_manager.connect()
+        try:
+            user_data = await pg_manager.get_table('type_of_works')
+            headers = ["Types_of_work"]
+            column_widths = [12, 25, 20, 15]
+
+            header_row = (
+                f"{headers[0].ljust(column_widths[3])}"
+            )
+
+            formatted_rows = [
+                f"{str(record['type_of_work_name']).ljust(column_widths[0])}"
+                for record in user_data
+            ]
+
+            formatted_data = "\n".join([header_row] + formatted_rows)
+            await message.answer(f"Данные таблицы type_of_works:\n\n```{formatted_data}```", parse_mode="Markdown")
 
         except Exception as e:
             await message.answer(f"Ошибка при получении данных таблицы: {e}")
