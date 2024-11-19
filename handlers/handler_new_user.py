@@ -1,7 +1,6 @@
 from aiogram import Router, F, types
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
-from create_bot import pg_manager
 from handlers.states import RegistrationStates
 from messages import MESSAGES
 from keyboards import *
@@ -87,7 +86,8 @@ async def get_role_handler(message: Message, state: FSMContext):
             }
         )
         await message.answer(f"Спасибо, {user_name}! Твоя роль '{user_role}' сохранена.")
-        await message.answer(MESSAGES['know_object'], reply_markup=objects_kb(message.from_user.id))
+        keyboard = await objects_kb(message.from_user.id)
+        await message.answer(MESSAGES['know_object'], reply_markup=keyboard)
         await state.set_state(RegistrationStates.waiting_for_object)
     except Exception as e:
         await message.answer(f"Произошла ошибка при сохранении данных: {e}")

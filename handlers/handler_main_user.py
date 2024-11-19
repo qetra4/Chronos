@@ -1,7 +1,6 @@
 from aiogram import Router, types
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
-from create_bot import pg_manager
 from handlers.states import RegistrationStates
 from messages import MESSAGES
 from keyboards import *
@@ -15,7 +14,8 @@ async def get_info_handler(message: Message, state: FSMContext):
     user_info = message.text
     await state.update_data(user_info=user_info)
     if user_info == 'Да, расскажу':
-        await message.answer(MESSAGES['know_object'], reply_markup=objects_kb(message.from_user.id))
+        keyboard = await objects_kb(message.from_user.id)
+        await message.answer(MESSAGES['know_object'], reply_markup=keyboard)
         await state.set_state(RegistrationStates.waiting_for_object)
     else:
         await message.answer(MESSAGES['why_not'], reply_markup=types.ReplyKeyboardRemove())
@@ -26,7 +26,8 @@ async def get_info_handler(message: Message, state: FSMContext):
 async def get_object_handler(message: Message, state: FSMContext):
     user_object = message.text
     await state.update_data(user_object=user_object)
-    await message.answer(MESSAGES['know_system'], reply_markup=systems_kb(message.from_user.id))
+    keyboard = await systems_kb(message.from_user.id)
+    await message.answer(MESSAGES['know_system'], reply_markup=keyboard)
     await state.set_state(RegistrationStates.waiting_for_system)
 
 
@@ -35,10 +36,12 @@ async def get_system_handler(message: Message, state: FSMContext):
     user_system = message.text
     await state.update_data(user_system=user_system)
     if user_system == "АУД - Умный дом":
-        await message.answer(MESSAGES['know_subsystem'], reply_markup=subsystems_kb(message.from_user.id))
+        keyboard = await subsystems_kb(message.from_user.id)
+        await message.answer(MESSAGES['know_subsystem'], reply_markup=keyboard)
         await state.set_state(RegistrationStates.waiting_for_subsystem)
     else:
-        await message.answer(MESSAGES['know_type_of_work'], reply_markup=types_of_work_kb(message.from_user.id))
+        keyboard = await types_of_work_kb(message.from_user.id)
+        await message.answer(MESSAGES['know_type_of_work'], reply_markup=keyboard)
         await state.set_state(RegistrationStates.waiting_for_type_of_work)
 
 
@@ -46,7 +49,8 @@ async def get_system_handler(message: Message, state: FSMContext):
 async def get_subsystem_handler(message: Message, state: FSMContext):
     user_subsystem = message.text
     await state.update_data(user_subsystem=user_subsystem)
-    await message.answer(MESSAGES['know_type_of_work'], reply_markup=types_of_work_kb(message.from_user.id))
+    keyboard = await types_of_work_kb(message.from_user.id)
+    await message.answer(MESSAGES['know_type_of_work'], reply_markup=keyboard)
     await state.set_state(RegistrationStates.waiting_for_type_of_work)
 
 
@@ -120,7 +124,8 @@ async def get_more_handler(message: Message, state: FSMContext):
     await state.update_data(user_more=user_more)
     if user_more == 'Да':
         await pg_manager.connect()
-        await message.answer(MESSAGES['know_object'], reply_markup=objects_kb(message.from_user.id))
+        keyboard = await objects_kb(message.from_user.id)
+        await message.answer(MESSAGES['know_object'], reply_markup=keyboard)
         await state.set_state(RegistrationStates.waiting_for_object)
     else:
         await message.answer(MESSAGES['goodbye'], reply_markup=types.ReplyKeyboardRemove())

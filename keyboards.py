@@ -1,5 +1,5 @@
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton
-from create_bot import admins
+from create_bot import admins, pg_manager
 
 
 def role_kb(user_telegram_id: int):
@@ -29,45 +29,84 @@ def tell_info_kb(user_telegram_id: int):
     return keyboard
 
 
-def objects_kb(user_telegram_id: int):
-    kb_list = [
-        [KeyboardButton(text="Мостман"), KeyboardButton(text="Сосновка"), KeyboardButton(text="Парк Тауер")],
-        [KeyboardButton(text="Пестово_33"), KeyboardButton(text="Офис"), KeyboardButton(text="Life_244")],
-        [KeyboardButton(text="Кутузовский"), KeyboardButton(text="Технониколь_Рязань")]
-    ]
-    keyboard = ReplyKeyboardMarkup(keyboard=kb_list, resize_keyboard=True, one_time_keyboard=True)
-    return keyboard
+async def objects_kb(user_telegram_id: int) -> ReplyKeyboardMarkup:
+    await pg_manager.connect()
+    try:
+        rows = await pg_manager.get_table("Objects")
+        objects = [row["object_name"] for row in rows]
+        kb_list = [
+            [KeyboardButton(text=objects[i]), KeyboardButton(text=objects[i + 1])]
+            if i + 1 < len(objects) else [KeyboardButton(text=objects[i])]
+            for i in range(0, len(objects), 2)
+        ]
+        keyboard = ReplyKeyboardMarkup(keyboard=kb_list, resize_keyboard=True, one_time_keyboard=True)
+        return keyboard
+    except Exception as e:
+        print(f"Ошибка при создании клавиатуры: {e}")
+        return ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+
+    finally:
+        await pg_manager.close()
 
 
-def systems_kb(user_telegram_id: int):
-    kb_list = [
-         [KeyboardButton(text="СВН - Видеонаблюдение"), KeyboardButton(text="АУД - Умный дом")],
-         [KeyboardButton(text="СКС - Слаботочные сети"), KeyboardButton(text=" АВ - Аудио/Видео")],
-         [KeyboardButton(text="ДМС - Домофонные системы"), KeyboardButton(text="ЭОМ - Электрика")]
-    ]
-    keyboard = ReplyKeyboardMarkup(keyboard=kb_list, resize_keyboard=True, one_time_keyboard=True)
-    return keyboard
+async def systems_kb(user_telegram_id: int) -> ReplyKeyboardMarkup:
+    await pg_manager.connect()
+    try:
+        rows = await pg_manager.get_table("systems")
+        objects = [row["system_name"] for row in rows]
+        kb_list = [
+            [KeyboardButton(text=objects[i]), KeyboardButton(text=objects[i + 1])]
+            if i + 1 < len(objects) else [KeyboardButton(text=objects[i])]
+            for i in range(0, len(objects), 2)
+        ]
+        keyboard = ReplyKeyboardMarkup(keyboard=kb_list, resize_keyboard=True, one_time_keyboard=True)
+        return keyboard
+    except Exception as e:
+        print(f"Ошибка при создании клавиатуры: {e}")
+        return ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+
+    finally:
+        await pg_manager.close()
 
 
-def subsystems_kb(user_telegram_id: int):
-    kb_list = [
-        [KeyboardButton(text="Освещение"), KeyboardButton(text="Климат-контроль"),KeyboardButton(text="Шторы")],
-        [KeyboardButton(text="Инженерные системы"),KeyboardButton(text="Теплый пол"), KeyboardButton(text="Протечки")],
-        [KeyboardButton(text="Управление"), KeyboardButton(text="Интерфейс"),KeyboardButton(text="Голосовое управление")]
-    ]
-    keyboard = ReplyKeyboardMarkup(keyboard=kb_list, resize_keyboard=True, one_time_keyboard=True)
-    return keyboard
+async def subsystems_kb(user_telegram_id: int) -> ReplyKeyboardMarkup:
+    await pg_manager.connect()
+    try:
+        rows = await pg_manager.get_table("subsystems")
+        objects = [row["subsystem_name"] for row in rows]
+        kb_list = [
+            [KeyboardButton(text=objects[i]), KeyboardButton(text=objects[i + 1])]
+            if i + 1 < len(objects) else [KeyboardButton(text=objects[i])]
+            for i in range(0, len(objects), 2)
+        ]
+        keyboard = ReplyKeyboardMarkup(keyboard=kb_list, resize_keyboard=True, one_time_keyboard=True)
+        return keyboard
+    except Exception as e:
+        print(f"Ошибка при создании клавиатуры: {e}")
+        return ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+
+    finally:
+        await pg_manager.close()
 
 
-def types_of_work_kb(user_telegram_id: int):
-    kb_list = [
-        [KeyboardButton(text="Подключение щита"), KeyboardButton(text="Монтаж")],
-        [KeyboardButton(text="Кабельные работы"), KeyboardButton(text="Проектирование")],
-        [KeyboardButton(text="Сборка щита"), KeyboardButton(text="Программирование")],
-        [KeyboardButton(text="Обследование")]
-    ]
-    keyboard = ReplyKeyboardMarkup(keyboard=kb_list, resize_keyboard=True, one_time_keyboard=True)
-    return keyboard
+async def types_of_work_kb(user_telegram_id: int) -> ReplyKeyboardMarkup:
+    await pg_manager.connect()
+    try:
+        rows = await pg_manager.get_table("type_of_works")
+        objects = [row["type_of_work_name"] for row in rows]
+        kb_list = [
+            [KeyboardButton(text=objects[i]), KeyboardButton(text=objects[i + 1])]
+            if i + 1 < len(objects) else [KeyboardButton(text=objects[i])]
+            for i in range(0, len(objects), 2)
+        ]
+        keyboard = ReplyKeyboardMarkup(keyboard=kb_list, resize_keyboard=True, one_time_keyboard=True)
+        return keyboard
+    except Exception as e:
+        print(f"Ошибка при создании клавиатуры: {e}")
+        return ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+
+    finally:
+        await pg_manager.close()
 
 
 def admin_choose_kb(user_telegram_id: int):

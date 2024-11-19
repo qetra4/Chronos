@@ -68,7 +68,6 @@ async def admin_choose_table_handler(message: types.Message, state: FSMContext):
         await send_table_types_of_work(message)
 
 
-
 @admin_router.message(RegistrationStates.waiting_for_admin_keyboard_choose)
 async def admin_choose_keyboard_handler(message: types.Message, state: FSMContext):
     admin_keyboard = message.text
@@ -85,13 +84,25 @@ async def admin_choose_way_handler(message: types.Message, state: FSMContext):
         admin_data = await state.get_data()
         admin_keyboard = admin_data.get('admin_keyboard')
         if admin_keyboard == 'Объекты':
-            await message.answer(MESSAGES['delete_button'], reply_markup=systems_kb(message.from_user.id))
+            keyboard = await objects_kb(message.from_user.id)
+            await state.update_data(field_name='object_name')
+            await state.update_data(admin_table='objects')
+            await message.answer(MESSAGES['delete_button'], reply_markup=keyboard)
         if admin_keyboard == 'Системы':
-            await message.answer(MESSAGES['delete_button'], reply_markup=subsystems_kb(message.from_user.id))
+            keyboard = await systems_kb(message.from_user.id)
+            await state.update_data(field_name='system_name')
+            await state.update_data(admin_table='systems')
+            await message.answer(MESSAGES['delete_button'], reply_markup=keyboard)
         if admin_keyboard == 'Подсистемы':
-            await message.answer(MESSAGES['delete_button'], reply_markup=systems_kb(message.from_user.id))
+            keyboard = await subsystems_kb(message.from_user.id)
+            await state.update_data(field_name='subsystem_name')
+            await state.update_data(admin_table='subsystems')
+            await message.answer(MESSAGES['delete_button'], reply_markup=keyboard)
         if admin_keyboard == 'Тип работы':
-            await message.answer(MESSAGES['delete_button'], reply_markup=types_of_work_kb(message.from_user.id))
+            keyboard = await types_of_work_kb(message.from_user.id)
+            await state.update_data(field_name='type_of_work_name')
+            await state.update_data(admin_table='type_of_works')
+            await message.answer(MESSAGES['delete_button'], reply_markup=keyboard)
         await state.set_state(RegistrationStates.waiting_for_delete_button)
     elif admin_way == "Создать кнопку":
         await message.answer(MESSAGES['create_button'], reply_markup=types.ReplyKeyboardRemove())
@@ -114,7 +125,8 @@ async def admin_create_button_handler(message: types.Message, state: FSMContext)
                     "object_name": admin_text,
                 }
             )
-        if admin_keyboard == 'Системы':
+
+        elif admin_keyboard == 'Системы':
             await pg_manager.create_systems_table()
             await pg_manager.insert_data(
                 table_name="systems",
@@ -122,7 +134,8 @@ async def admin_create_button_handler(message: types.Message, state: FSMContext)
                     "system_name": admin_text,
                 }
             )
-        if admin_keyboard == 'Подсистемы':
+
+        elif admin_keyboard == 'Подсистемы':
             await pg_manager.create_subsystems_table()
             await pg_manager.insert_data(
                 table_name="subsystems",
@@ -130,7 +143,8 @@ async def admin_create_button_handler(message: types.Message, state: FSMContext)
                     "subsystem_name": admin_text,
                 }
             )
-        if admin_keyboard == 'Тип работы':
+
+        elif admin_keyboard == 'Тип работы':
             await pg_manager.create_types_of_works_table()
             await pg_manager.insert_data(
                 table_name="type_of_works",
@@ -138,6 +152,7 @@ async def admin_create_button_handler(message: types.Message, state: FSMContext)
                     "type_of_work_name": admin_text,
                 }
             )
+
         await message.answer("Готово!")
     except Exception as e:
         await message.answer(f"Произошла ошибка при сохранении данных: {e}")
@@ -146,14 +161,12 @@ async def admin_create_button_handler(message: types.Message, state: FSMContext)
 
 @admin_router.message(RegistrationStates.waiting_for_delete_button)
 async def admin_delete_button_handler(message: types.Message, state: FSMContext):
-    admin_way = message.text
-    await state.update_data(admin_way=admin_way)
+    button = message.text
+    await state.update_data(button=button)
     admin_data = await state.get_data()
-    admin_keyboard = admin_data.get('admin_keyboard')
-    if admin_way == "Удалить кнопку":
-        await message.answer("sssss")
-    elif admin_way == "Создать кнопку":
-        await message.answer("yyyyy")
-
-    await message.answer(MESSAGES['admin_how_to_edit_keyboard'], reply_markup=admin_choose_kb_kb(message.from_user.id))
-    await state.set_state(RegistrationStates.waiting_for_way_to_edit_keyboard)
+    admin_table = admin_data.get('admin_table')
+    field_name = admin_data.get('field_name')
+    await message.answer("Готово!")
+    await pg_manager.connect()
+    await pg_manager.delete_data(table_name=admin_table, where_dict={field_name: button})
+    await pg_manager.close()

@@ -249,7 +249,7 @@ async def send_table_types_of_work(message: types.Message):
             ]
 
             formatted_data = "\n".join([header_row] + formatted_rows)
-            await message.answer(f"Данные таблицы type_of_works:\n\n```{formatted_data}```", parse_mode="Markdown")
+            await message.answer(f"Данные таблицы type of works:\n\n```{formatted_data}```", parse_mode="Markdown")
 
         except Exception as e:
             await message.answer(f"Ошибка при получении данных таблицы: {e}")
