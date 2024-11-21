@@ -32,12 +32,25 @@ async def get_obj_what_to_do(message: types.Message, state: FSMContext):
         await message.answer(MESSAGES['user_obj_show'], reply_markup=keyboard)
         await state.set_state(RegistrationStates.waiting_for_tap_to_hide_keyboard)
     elif user_obj_what == 'Добавить кнопку':
-        await message.answer(MESSAGES['user_obj_what_to_do'], reply_markup=user_obj_what_to_do(message.from_user.id))
-        await state.set_state(RegistrationStates.waiting_for_tap_to_add_button)
+        await pg_manager.connect()
+        count_objects = await pg_manager.count_records(table_name='objects')
+        count_user_objects = await pg_manager.count_records_for_certain_user(user_id=message.from_user.id,
+                                                                             table_name="user_keyboard")
+        if count_user_objects == count_objects:
+            await message.answer(MESSAGES['user_obj_add_false'], reply_markup=types.ReplyKeyboardRemove())
+        else:
+            await message.answer(MESSAGES['user_obj_add_true'], reply_markup=user_obj_what_to_do(message.from_user.id))
+            await state.set_state(RegistrationStates.waiting_for_tap_to_add_button)
     elif user_obj_what == 'Удалить кнопку':
         keyboard = await objects_kb(message.from_user.id)
-        await message.answer(MESSAGES['user_obj_what_to_do'], reply_markup=keyboard)
-        await state.set_state(RegistrationStates.waiting_for_tap_to_delete_button)
+        await pg_manager.connect()
+        count_objects = await pg_manager.count_records(table_name='objects')
+        pg_manager.close()
+        if count_objects == 1:
+            await message.answer(MESSAGES['user_obj_delete_false'], reply_markup=types.ReplyKeyboardRemove())
+        else:
+            await message.answer(MESSAGES['user_obj_delete_true'], reply_markup=keyboard)
+            await state.set_state(RegistrationStates.waiting_for_tap_to_delete_button)
 
 
 @user_obj_router.message(RegistrationStates.waiting_for_tap_to_hide_keyboard)
@@ -50,15 +63,12 @@ async def add_button_handler(message: Message, state: FSMContext):
     user_subsystem = message.text
     await state.update_data(user_subsystem=user_subsystem)
     keyboard = await types_of_work_kb(message.from_user.id)
-    await message.answer(MESSAGES['know_type_of_work'], reply_markup=keyboard)
-    await state.set_state(RegistrationStates.waiting_for_type_of_work)
+    await message.answer("Успех!", reply_markup=keyboard)
 
 
-@user_obj_router.message(RegistrationStates.waiting_for_subsystem)
+@user_obj_router.message(RegistrationStates.waiting_for_tap_to_delete_button)
 async def delete_button_handler(message: Message, state: FSMContext):
     user_subsystem = message.text
     await state.update_data(user_subsystem=user_subsystem)
     keyboard = await types_of_work_kb(message.from_user.id)
-    await message.answer(MESSAGES['know_type_of_work'], reply_markup=keyboard)
-    await state.set_state(RegistrationStates.waiting_for_type_of_work)
-
+    await message.answer("Успех!", reply_markup=keyboard)

@@ -204,6 +204,18 @@ class PostgresHandler:
         user_data = await self.connection.fetch(query)
         return user_data
 
+    async def count_records(self, table_name):
+        query = f"SELECT count(*) FROM {table_name}"
+        user_data = await self.connection.fetch(query)
+        count = user_data[0][0] if user_data else 0
+        return count
+
+    async def count_records_for_certain_user(self, user_id: int, table_name: str) -> int:
+        query = f"SELECT count(*) FROM {table_name} WHERE user_id = $1"
+        user_data = await self.connection.fetch(query, user_id)
+        count = user_data[0][0] if user_data else 0
+        return count
+
     async def get_users_and_records_tables(self):
         query = """SELECT full_name, object, system, subsystem, spent_time, work_type, date, notes FROM Records r
                     JOIN Users u ON u.user_id = r.user_id;
