@@ -109,7 +109,6 @@ async def get_notes_handler(message: Message, state: FSMContext):
     except Exception as e:
         await message.answer(f"Произошла ошибка при сохранении данных: {e}")
     if user_object is not None:
-        await state.clear()
         await message.answer(MESSAGES['know_more'],
                              reply_markup=yes_no_kb(message.from_user.id))
         await state.set_state(RegistrationStates.waiting_for_more)
@@ -123,10 +122,24 @@ async def get_more_handler(message: Message, state: FSMContext):
     user_more = message.text
     await state.update_data(user_more=user_more)
     if user_more == 'Да':
+        await state.update_data(user_subsystem=None)
         await pg_manager.connect()
-        keyboard = await objects_kb(message.from_user.id)
-        await message.answer(MESSAGES['know_object'], reply_markup=keyboard)
-        await state.set_state(RegistrationStates.waiting_for_object)
+        await message.answer(MESSAGES['same_object'], reply_markup=yes_no_kb(message.from_user.id))
+        await state.set_state(RegistrationStates.waiting_for_same_object)
     else:
         await message.answer(MESSAGES['goodbye'], reply_markup=types.ReplyKeyboardRemove())
         await state.clear()
+
+
+@user_main_router.message(RegistrationStates.waiting_for_same_object)
+async def waiting_for_same_object(message: Message, state: FSMContext):
+    user_same = message.text
+    if user_same == 'Да':
+        keyboard = await systems_kb(message.from_user.id)
+        await message.answer(MESSAGES['know_system'], reply_markup=keyboard)
+        await state.set_state(RegistrationStates.waiting_for_system)
+    else:
+        keyboard = await objects_kb(message.from_user.id)
+        await message.answer(MESSAGES['know_object'], reply_markup=keyboard)
+        await state.set_state(RegistrationStates.waiting_for_object)
+

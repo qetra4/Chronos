@@ -23,5 +23,6 @@ class RegistrationStates(StatesGroup):
     waiting_for_way_to_edit_keyboard = State()
     waiting_for_create_button = State()
     waiting_for_delete_button = State()
+    waiting_for_same_object = State()
     send_table_users = State()
     send_table_records = State()

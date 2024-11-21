@@ -110,6 +110,10 @@ create_button = '''
 Напиши название новой кнопки
 '''
 
+same_object = '''
+Работал на том же объекте?
+'''
+
 
 MESSAGES = {
     'know_name': know_name,
@@ -139,4 +143,5 @@ MESSAGES = {
     'admin_how_to_edit_keyboard': admin_how_to_edit_keyboard,
     'delete_button': delete_button,
     'create_button': create_button,
+    'same_object': same_object,
 }
