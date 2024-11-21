@@ -32,7 +32,7 @@ def tell_info_kb(user_telegram_id: int):
 async def objects_kb(user_telegram_id: int) -> ReplyKeyboardMarkup:
     await pg_manager.connect()
     try:
-        rows = await pg_manager.get_table("Objects")
+        rows = await pg_manager.get_keyboard_data(user_id=user_telegram_id)
         objects = [row["object_name"] for row in rows]
         kb_list = [
             [KeyboardButton(text=objects[i]), KeyboardButton(text=objects[i + 1])]
@@ -141,6 +141,15 @@ def admin_choose_table_kb(user_telegram_id: int):
         [KeyboardButton(text="Таблица Banned Users"), KeyboardButton(text="Таблица Notifications")],
         [KeyboardButton(text="Таблица Types_of_work"), KeyboardButton(text="Таблица Objects")],
         [KeyboardButton(text="Таблица Systems"), KeyboardButton(text="Таблица Subsystems")]
+    ]
+    keyboard = ReplyKeyboardMarkup(keyboard=kb_list, resize_keyboard=True, one_time_keyboard=True)
+    return keyboard
+
+
+def user_obj_what_to_do(user_telegram_id: int):
+    kb_list = [
+        [KeyboardButton(text="Добавить кнопку"), KeyboardButton(text="Удалить кнопку")],
+        [KeyboardButton(text="Отобразить текущую клавиатуру")]
     ]
     keyboard = ReplyKeyboardMarkup(keyboard=kb_list, resize_keyboard=True, one_time_keyboard=True)
     return keyboard

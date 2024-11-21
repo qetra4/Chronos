@@ -6,6 +6,7 @@ from handlers.handler_main_user import user_main_router
 from handlers.handler_new_user import new_user_router
 from handlers.handler_admin import admin_router
 from handlers.handler_user_notification import notification_user_router
+from handlers.handler_user_object import user_obj_router
 
 
 async def main():
@@ -13,6 +14,7 @@ async def main():
     dp.include_router(new_user_router)
     dp.include_router(notification_user_router)
     dp.include_router(admin_router)
+    dp.include_router(user_obj_router)
     await pg_manager.setup_pool()
     await setup_scheduler(bot, pg_manager)
     await bot.delete_webhook(drop_pending_updates=True)

@@ -2,7 +2,7 @@ from aiogram import F
 from aiogram.fsm.context import FSMContext
 from handlers.states import RegistrationStates
 from messages import MESSAGES
-from funcs_admin import *
+from functions.funcs_admin import *
 
 
 admin_router = Router()

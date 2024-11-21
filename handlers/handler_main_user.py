@@ -142,4 +142,3 @@ async def waiting_for_same_object(message: Message, state: FSMContext):
         keyboard = await objects_kb(message.from_user.id)
         await message.answer(MESSAGES['know_object'], reply_markup=keyboard)
         await state.set_state(RegistrationStates.waiting_for_object)
-

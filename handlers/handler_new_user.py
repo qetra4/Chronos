@@ -75,6 +75,8 @@ async def get_role_handler(message: Message, state: FSMContext):
         return
 
     await pg_manager.create_table_users()
+    await pg_manager.create_user_keyboard_table()
+    all_objects = await pg_manager.get_object_names()
 
     try:
         await pg_manager.insert_data(
@@ -85,12 +87,25 @@ async def get_role_handler(message: Message, state: FSMContext):
                 "role": user_role
             }
         )
+    except Exception as e:
+        await message.answer(f"Произошла ошибка при сохранении данных: {e}")
+        await state.clear()
+
+    try:
+        for obj in all_objects:
+            await pg_manager.insert_data(
+                table_name="user_keyboard",
+                records_data={
+                    "user_id": user_id,
+                    "object_name": obj['object_name'],
+                }
+            )
         await message.answer(f"Спасибо, {user_name}! Твоя роль '{user_role}' сохранена.")
         keyboard = await objects_kb(message.from_user.id)
         await message.answer(MESSAGES['know_object'], reply_markup=keyboard)
         await state.set_state(RegistrationStates.waiting_for_object)
     except Exception as e:
-        await message.answer(f"Произошла ошибка при сохранении данных: {e}")
+        await message.answer(f"Произошла ошибка при создании object keyboard {e}")
         await state.clear()
 
     await pg_manager.close()

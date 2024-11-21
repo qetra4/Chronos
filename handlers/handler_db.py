@@ -94,6 +94,19 @@ class PostgresHandler:
         return await self.connection.fetchval("SELECT hour FROM notifications WHERE user_id = $1",
                                               user_id) is not None
 
+    async def create_user_keyboard_table(self):
+        try:
+            await self.connection.execute("""
+             CREATE TABLE IF NOT EXISTS user_keyboard (
+                button_id SERIAL PRIMARY KEY,
+                user_id BIGINT REFERENCES users(user_id) ON DELETE CASCADE,
+                object_name VARCHAR
+             );
+             """)
+            print("Table user_keyboard created or already exists.")
+        except Exception as e:
+            print("Error while creating table ban:", e)
+
     async def create_ban_table(self):
         try:
             await self.connection.execute("""
@@ -181,6 +194,11 @@ class PostgresHandler:
         user_data = await self.connection.fetchrow(query, user_id)
         return user_data
 
+    async def get_keyboard_data(self, user_id: int, table_name='user_keyboard'):
+        query = f"SELECT * FROM {table_name} WHERE user_id = $1"
+        user_data = await self.connection.fetch(query, user_id)
+        return user_data
+
     async def get_table(self, table_name):
         query = f"SELECT * FROM {table_name}"
         user_data = await self.connection.fetch(query)
@@ -197,6 +215,11 @@ class PostgresHandler:
         query = """SELECT full_name, hour, minutes FROM Notifications n
                     JOIN Users u ON u.user_id = n.user_id;
                     """
+        user_data = await self.connection.fetch(query)
+        return user_data
+
+    async def get_object_names(self):
+        query = "SELECT object_name FROM objects"
         user_data = await self.connection.fetch(query)
         return user_data
 

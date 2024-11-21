@@ -1,5 +1,4 @@
 from aiogram import Router, types
-from create_bot import pg_manager
 from decouple import config
 from keyboards import *
 

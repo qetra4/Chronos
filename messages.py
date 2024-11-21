@@ -114,6 +114,30 @@ same_object = '''
 Работал на том же объекте?
 '''
 
+user_obj_what_to_do = '''
+Это настройки клавиатуры объектов. Если хочешь, ее можно отредактировать под себя.
+'''
+
+user_obj_show = '''
+Это текущий вид твоей клавиатуры объектов. Чтобы закрыть, нажми на любую кнопку.
+'''
+
+user_obj_add_true = '''
+Это клавиатура с кнопками, которых у тебя нет. Чтобы добавить нужную, просто нажми на нее.
+'''
+
+user_obj_add_false = '''
+Добавлять больше нечего! В твоей клавиатуре и так присутствуют все возможные кнопки :/
+'''
+
+user_obj_delete_true = '''
+Это твоя текущая клавиатура. Чтобы удалить кнопку, просто нажми на нее.
+'''
+
+user_obj_delete_false = '''
+Удалять больше нечего! Последнюю кнопку уничтожить не дам.
+'''
+
 
 MESSAGES = {
     'know_name': know_name,
@@ -144,4 +168,10 @@ MESSAGES = {
     'delete_button': delete_button,
     'create_button': create_button,
     'same_object': same_object,
+    'user_obj_what_to_do': user_obj_what_to_do,
+    'user_obj_show': user_obj_show,
+    'user_obj_add_true': user_obj_add_true,
+    'user_obj_add_false': user_obj_add_false,
+    'user_obj_delete_true': user_obj_delete_true,
+    'user_obj_delete_false': user_obj_delete_false,
 }
