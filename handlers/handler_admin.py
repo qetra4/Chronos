@@ -21,7 +21,8 @@ async def admin_handler(message: types.Message, state: FSMContext):
         user_info = await pg_manager.get_user_data(user_id=message.from_user.id, table_name='users')
         if user_info:
             if is_admin(message.from_user.id):
-                await message.answer(MESSAGES["admin_choose_option"], reply_markup=admin_choose_kb(message.from_user.id))
+                await message.answer(MESSAGES["admin_choose_option"],
+                                     reply_markup=admin_choose_kb(message.from_user.id))
                 await state.set_state(RegistrationStates.waiting_for_admin_chose)
             else:
                 await message.answer("Недостаточно прав.")
@@ -40,7 +41,6 @@ async def admin_choose_handler(message: types.Message, state: FSMContext):
         await state.set_state(RegistrationStates.waiting_for_admin_table)
     elif admin_info == 'Покажи график':
         await message.answer(MESSAGES['why_not'], reply_markup=types.ReplyKeyboardRemove())
-        await state.set_state(RegistrationStates.waiting_for_admin_diagram)
     elif admin_info == 'Открой keyboards-редактор':
         await message.answer(MESSAGES['admin_choose_keyboard'], reply_markup=admin_choose_kb_kb(message.from_user.id))
         await state.set_state(RegistrationStates.waiting_for_admin_keyboard_choose)
@@ -72,7 +72,8 @@ async def admin_choose_table_handler(message: types.Message, state: FSMContext):
 async def admin_choose_keyboard_handler(message: types.Message, state: FSMContext):
     admin_keyboard = message.text
     await state.update_data(admin_keyboard=admin_keyboard)
-    await message.answer(MESSAGES['admin_how_to_edit_keyboard'], reply_markup=admin_way_to_edit_kb(message.from_user.id))
+    await message.answer(MESSAGES['admin_how_to_edit_keyboard'],
+                         reply_markup=admin_way_to_edit_kb(message.from_user.id))
     await state.set_state(RegistrationStates.waiting_for_way_to_edit_keyboard)
 
 
@@ -157,11 +158,13 @@ async def admin_create_button_handler(message: types.Message, state: FSMContext)
     except Exception as e:
         await message.answer(f"Произошла ошибка при сохранении данных: {e}")
     await pg_manager.close()
+    await state.clear()
 
 
 @admin_router.message(RegistrationStates.waiting_for_delete_button)
 async def admin_delete_button_handler(message: types.Message, state: FSMContext):
     button = message.text
+    user_id = message.from_user.id
     await state.update_data(button=button)
     admin_data = await state.get_data()
     admin_table = admin_data.get('admin_table')
@@ -169,4 +172,7 @@ async def admin_delete_button_handler(message: types.Message, state: FSMContext)
     await message.answer("Готово!")
     await pg_manager.connect()
     await pg_manager.delete_data(table_name=admin_table, where_dict={field_name: button})
+    await pg_manager.delete_data(table_name='user_keyboard',
+                                 where_dict={"user_id": user_id, 'object_name': button})
     await pg_manager.close()
+    await state.clear()

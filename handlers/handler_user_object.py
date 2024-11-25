@@ -28,7 +28,7 @@ async def set_objects_handler(message: Message, state: FSMContext):
 async def get_obj_what_to_do(message: types.Message, state: FSMContext):
     user_obj_what = message.text
     if user_obj_what == 'Отобразить текущую клавиатуру':
-        keyboard = await objects_kb(message.from_user.id)
+        keyboard = await user_objects_kb(message.from_user.id)
         await message.answer(MESSAGES['user_obj_show'], reply_markup=keyboard)
         await state.set_state(RegistrationStates.waiting_for_tap_to_hide_keyboard)
     elif user_obj_what == 'Добавить кнопку':
@@ -36,6 +36,7 @@ async def get_obj_what_to_do(message: types.Message, state: FSMContext):
         count_objects = await pg_manager.count_records(table_name='objects')
         count_user_objects = await pg_manager.count_records_for_certain_user(user_id=message.from_user.id,
                                                                              table_name="user_keyboard")
+        print(count_user_objects, count_objects)
         if count_user_objects == count_objects:
             await message.answer(MESSAGES['user_obj_add_false'], reply_markup=types.ReplyKeyboardRemove())
         else:
@@ -49,7 +50,7 @@ async def get_obj_what_to_do(message: types.Message, state: FSMContext):
         if count_objects == 1:
             await message.answer(MESSAGES['user_obj_delete_false'], reply_markup=types.ReplyKeyboardRemove())
         else:
-            keyboard = await objects_kb(message.from_user.id)
+            keyboard = await user_objects_kb(message.from_user.id)
             await message.answer(MESSAGES['user_obj_delete_true'], reply_markup=keyboard)
             await state.set_state(RegistrationStates.waiting_for_tap_to_delete_button)
 
@@ -85,6 +86,7 @@ async def delete_button_handler(message: Message, state: FSMContext):
     user_id = message.from_user.id
     await state.update_data(object_name=object_name)
     await pg_manager.connect()
+    print(user_id, object_name)
     await pg_manager.delete_data(table_name='user_keyboard',
                                  where_dict={"user_id": user_id, 'object_name': object_name})
     await pg_manager.close()

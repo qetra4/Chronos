@@ -278,7 +278,6 @@ class PostgresHandler:
     async def delete_data(self, table_name: str, where_dict: Dict[str, Any]):
         conditions = ' AND '.join([f"{key} = ${i + 1}" for i, key in enumerate(where_dict.keys())])
         query = f"DELETE FROM {table_name} WHERE {conditions};"
-
         try:
             await self.connection.execute(query, *where_dict.values())
         except Exception as e:
