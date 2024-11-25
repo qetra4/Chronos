@@ -25,6 +25,22 @@ async def start_command_handler(message: Message, state: FSMContext):
     await pg_manager.close()
 
 
+@new_user_router.message(F.text == "/choose_date_to_answer")
+async def choose_date_to_answer_command_handler(message: Message, state: FSMContext):
+    await pg_manager.connect()
+    is_user_banned = await pg_manager.is_user_banned(user_id=message.from_user.id)
+    if not is_user_banned:
+        user_info = await pg_manager.get_user_data(user_id=message.from_user.id, table_name='users')
+        if user_info:
+            await message.answer(MESSAGES['hello'])
+            await message.answer(MESSAGES['intention_message'], reply_markup=tell_info_kb(message.from_user.id))
+            await state.set_state(RegistrationStates.waiting_for_info)
+        else:
+            await message.answer(MESSAGES['user_pass'])
+            await state.set_state(RegistrationStates.waiting_for_password)
+    await pg_manager.close()
+
+
 @new_user_router.message(RegistrationStates.waiting_for_password)
 async def get_password_handler(message: types.Message, state: FSMContext):
     user_pass = message.text

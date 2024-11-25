@@ -67,6 +67,7 @@ class PostgresHandler:
                     system TEXT,
                     subsystem TEXT,
                     work_type TEXT,
+                    extra TEXT,
                     spent_time INT,
                     date DATE,
                     notes VARCHAR(255)

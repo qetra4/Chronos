@@ -28,3 +28,4 @@ class RegistrationStates(StatesGroup):
     waiting_for_tap_to_hide_keyboard = State()
     waiting_for_tap_to_add_button = State()
     waiting_for_tap_to_delete_button = State()
+    waiting_for_extra = State()

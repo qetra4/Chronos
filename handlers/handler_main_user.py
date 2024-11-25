@@ -58,6 +58,14 @@ async def get_subsystem_handler(message: Message, state: FSMContext):
 async def get_type_of_work_handler(message: Message, state: FSMContext):
     user_type_of_work = message.text
     await state.update_data(user_type_of_work=user_type_of_work)
+    await message.answer(MESSAGES['know_extra'], reply_markup=yes_no_kb(message.from_user.id))
+    await state.set_state(RegistrationStates.waiting_for_extra)
+
+
+@user_main_router.message(RegistrationStates.waiting_for_extra)
+async def get_extra_handler(message: Message, state: FSMContext):
+    user_extra = message.text
+    await state.update_data(user_extra=user_extra)
     await message.answer(MESSAGES['know_spent_time'])
     await state.set_state(RegistrationStates.waiting_for_spent_time)
 
@@ -88,6 +96,7 @@ async def get_notes_handler(message: Message, state: FSMContext):
     user_system = user_data.get('user_system')
     user_subsystem = user_data.get('user_subsystem')
     user_type_of_work = user_data.get('user_type_of_work')
+    user_extra = user_data.get('user_extra')
     user_spent_time = user_data.get('user_spent_time')
     await pg_manager.connect()
     await pg_manager.create_table_records()
@@ -102,6 +111,7 @@ async def get_notes_handler(message: Message, state: FSMContext):
                 "subsystem": user_subsystem,
                 "work_type": user_type_of_work,
                 "spent_time": user_spent_time,
+                "extra": user_extra,
                 "date": today,
                 "notes": user_notes
             }

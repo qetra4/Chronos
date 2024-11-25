@@ -39,6 +39,10 @@ know_more = '''
 Работал ли еще над чем-нибудь сегодня?
 '''
 
+know_extra = '''
+Эта работа была дополнительная?
+'''
+
 goodbye = '''
 Замечательно, я всё записал. Спасибо за уделенное время!
 '''
@@ -150,6 +154,7 @@ MESSAGES = {
     'know_type_of_work': know_type_of_work,
     'know_notes': know_notes,
     'know_more': know_more,
+    'know_extra': know_extra,
     'goodbye': goodbye,
     'user_pass': user_pass,
     'wrong_answer': wrong_answer,
