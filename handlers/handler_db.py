@@ -189,7 +189,7 @@ class PostgresHandler:
         except Exception as e:
             print("Error while inserting data:", e)
 
-    async def get_user_data(self, user_id: int, table_name='users_reg'):
+    async def get_user_data(self, user_id: int, table_name):
         query = f"SELECT * FROM {table_name} WHERE user_id = $1"
         user_data = await self.connection.fetchrow(query, user_id)
         return user_data
@@ -197,6 +197,11 @@ class PostgresHandler:
     async def get_keyboard_data(self, user_id: int, table_name='user_keyboard'):
         query = f"SELECT * FROM {table_name} WHERE user_id = $1"
         user_data = await self.connection.fetch(query, user_id)
+        return user_data
+
+    async def get_object_data(self):
+        query = "SELECT object_name FROM objects"
+        user_data = await self.connection.fetch(query)
         return user_data
 
     async def get_table(self, table_name):

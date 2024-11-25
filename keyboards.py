@@ -49,6 +49,28 @@ async def objects_kb(user_telegram_id: int) -> ReplyKeyboardMarkup:
         await pg_manager.close()
 
 
+async def left_objects_kb(user_telegram_id: int) -> ReplyKeyboardMarkup:
+    await pg_manager.connect()
+    try:
+        user_rows = await pg_manager.get_keyboard_data(user_id=user_telegram_id)
+        user_objects = [row["object_name"] for row in user_rows]
+        common_rows = await pg_manager.get_object_data()
+        common_objects = [row["object_name"] for row in common_rows]
+        left_objects = [obj for obj in common_objects if obj not in user_objects]
+        kb_list = [
+            [KeyboardButton(text=left_objects[i]), KeyboardButton(text=left_objects[i + 1])]
+            if i + 1 < len(left_objects) else [KeyboardButton(text=left_objects[i])]
+            for i in range(0, len(left_objects), 2)
+        ]
+        keyboard = ReplyKeyboardMarkup(keyboard=kb_list, resize_keyboard=True, one_time_keyboard=True)
+        return keyboard
+    except Exception as e:
+        print(f"Ошибка при создании клавиатуры: {e}")
+        return ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+    finally:
+        await pg_manager.close()
+
+
 async def systems_kb(user_telegram_id: int) -> ReplyKeyboardMarkup:
     await pg_manager.connect()
     try:

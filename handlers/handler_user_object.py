@@ -39,16 +39,17 @@ async def get_obj_what_to_do(message: types.Message, state: FSMContext):
         if count_user_objects == count_objects:
             await message.answer(MESSAGES['user_obj_add_false'], reply_markup=types.ReplyKeyboardRemove())
         else:
-            await message.answer(MESSAGES['user_obj_add_true'], reply_markup=user_obj_what_to_do(message.from_user.id))
+            keyboard = await left_objects_kb(message.from_user.id)
+            await message.answer(MESSAGES['user_obj_add_true'], reply_markup=keyboard)
             await state.set_state(RegistrationStates.waiting_for_tap_to_add_button)
     elif user_obj_what == 'Удалить кнопку':
-        keyboard = await objects_kb(message.from_user.id)
         await pg_manager.connect()
         count_objects = await pg_manager.count_records(table_name='objects')
-        pg_manager.close()
+        await pg_manager.close()
         if count_objects == 1:
             await message.answer(MESSAGES['user_obj_delete_false'], reply_markup=types.ReplyKeyboardRemove())
         else:
+            keyboard = await objects_kb(message.from_user.id)
             await message.answer(MESSAGES['user_obj_delete_true'], reply_markup=keyboard)
             await state.set_state(RegistrationStates.waiting_for_tap_to_delete_button)
 
@@ -60,15 +61,31 @@ async def show_keyboard_handler(message: Message, state: FSMContext):
 
 @user_obj_router.message(RegistrationStates.waiting_for_tap_to_add_button)
 async def add_button_handler(message: Message, state: FSMContext):
-    user_subsystem = message.text
-    await state.update_data(user_subsystem=user_subsystem)
-    keyboard = await types_of_work_kb(message.from_user.id)
-    await message.answer("Успех!", reply_markup=keyboard)
+    object_name = message.text
+    user_id = message.from_user.id
+    await state.update_data(object_name=object_name)
+    await pg_manager.connect()
+    try:
+        await pg_manager.insert_data(
+            table_name="user_keyboard",
+            records_data={
+                "user_id": user_id,
+                "object_name": object_name
+            }
+        )
+    except Exception as e:
+        await message.answer(f"Произошла ошибка при сохранении данных: {e}")
+    await pg_manager.close()
+    await message.answer("Успех!")
 
 
 @user_obj_router.message(RegistrationStates.waiting_for_tap_to_delete_button)
 async def delete_button_handler(message: Message, state: FSMContext):
-    user_subsystem = message.text
-    await state.update_data(user_subsystem=user_subsystem)
-    keyboard = await types_of_work_kb(message.from_user.id)
-    await message.answer("Успех!", reply_markup=keyboard)
+    object_name = message.text
+    user_id = message.from_user.id
+    await state.update_data(object_name=object_name)
+    await pg_manager.connect()
+    await pg_manager.delete_data(table_name='user_keyboard',
+                                 where_dict={"user_id": user_id, 'object_name': object_name})
+    await pg_manager.close()
+    await message.answer("Успех!")
