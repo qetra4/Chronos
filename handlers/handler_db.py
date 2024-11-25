@@ -62,7 +62,7 @@ class PostgresHandler:
             await self.connection.execute("""
                 CREATE TABLE IF NOT EXISTS records (
                     record_id SERIAL PRIMARY KEY,
-                    user_id BIGINT REFERENCES users(user_id) ON DELETE CASCADE,
+                    user_id BIGINT REFERENCES users(user_id),
                     object TEXT,
                     system TEXT,
                     subsystem TEXT,

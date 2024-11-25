@@ -1,5 +1,5 @@
-from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton
-from create_bot import admins, pg_manager
+from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
+from create_bot import pg_manager
 
 
 def role_kb(user_telegram_id: int):
