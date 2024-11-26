@@ -1,12 +1,48 @@
-from aiogram import Router, types
+from aiogram import Router, types, F
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from handlers.states import RegistrationStates
 from messages import MESSAGES
 from keyboards import *
-from datetime import datetime
+from datetime import datetime, timedelta
 
 user_main_router = Router()
+
+@user_main_router.message(F.text == "/choose_date_to_answer")
+async def start_command_handler(message: Message, state: FSMContext):
+    await pg_manager.connect()
+    is_user_banned = await pg_manager.is_user_banned(user_id=message.from_user.id)
+    if not is_user_banned:
+        user_info = await pg_manager.get_user_data(user_id=message.from_user.id, table_name='users')
+        if user_info:
+            await message.answer(MESSAGES['know_period'], reply_markup=period_kb(message.from_user.id))
+            await state.set_state(RegistrationStates.waiting_for_period)
+        else:
+            await message.answer(MESSAGES['user_pass'])
+            await state.set_state(RegistrationStates.waiting_for_password)
+    await pg_manager.close()
+
+
+@user_main_router.message(RegistrationStates.waiting_for_period)
+async def get_info_handler(message: Message, state: FSMContext):
+    user_info = message.text
+    if user_info == 'Вчера':
+        date_fill = (datetime.now() - timedelta(1)).strftime('%Y-%m-%d')
+        date_fill = datetime.strptime(date_fill, '%Y-%m-%d')
+        await state.update_data(user_date=date_fill)
+        await message.answer(MESSAGES['intention_not_today'], reply_markup=tell_info_kb(message.from_user.id))
+        await state.set_state(RegistrationStates.waiting_for_info)
+    elif user_info == 'Завтра':
+        date_fill = (datetime.now() + timedelta(1)).strftime('%Y-%m-%d')
+        date_fill = datetime.strptime(date_fill, '%Y-%m-%d')
+        await state.update_data(user_date=date_fill)
+        await message.answer(MESSAGES['intention_not_today'], reply_markup=tell_info_kb(message.from_user.id))
+        await state.set_state(RegistrationStates.waiting_for_info)
+    elif user_info == 'За выбранную мной дату':
+        date_fill = "no"
+    elif user_info == 'По выбранный мной день включительно':    
+        date_fill = "no-no"
+    print(date_fill)
 
 
 @user_main_router.message(RegistrationStates.waiting_for_info)
@@ -16,6 +52,8 @@ async def get_info_handler(message: Message, state: FSMContext):
     if user_info == 'Да, расскажу':
         keyboard = await user_objects_kb(message.from_user.id)
         await message.answer(MESSAGES['know_object'], reply_markup=keyboard)
+        today = datetime.now().date()
+        await state.update_data(user_today=today)
         await state.set_state(RegistrationStates.waiting_for_object)
     else:
         await message.answer(MESSAGES['why_not'], reply_markup=types.ReplyKeyboardRemove())
@@ -88,10 +126,11 @@ async def get_spent_time_handler(message: Message, state: FSMContext):
 
 @user_main_router.message(RegistrationStates.waiting_for_notes)
 async def get_notes_handler(message: Message, state: FSMContext):
-    today = datetime.now()
     user_id = message.from_user.id
     user_notes = message.text
     user_data = await state.get_data()
+    user_date = user_data.get('user_date')
+    today = user_data.get('user_today')
     user_object = user_data.get('user_object')
     user_system = user_data.get('user_system')
     user_subsystem = user_data.get('user_subsystem')
@@ -112,19 +151,20 @@ async def get_notes_handler(message: Message, state: FSMContext):
                 "work_type": user_type_of_work,
                 "spent_time": user_spent_time,
                 "extra": user_extra,
-                "date": today,
+                "date": user_date,
                 "notes": user_notes
             }
         )
     except Exception as e:
         await message.answer(f"Произошла ошибка при сохранении данных: {e}")
-    if user_object is not None:
+
+    if (user_object is not None) and (user_date == today):
         await message.answer(MESSAGES['know_more'],
                              reply_markup=yes_no_kb(message.from_user.id))
         await state.set_state(RegistrationStates.waiting_for_more)
     else:
         await state.clear()
-        await message.answer(MESSAGES['goodbye'])
+        await message.answer(MESSAGES['goodbye'], reply_markup=types.ReplyKeyboardRemove())
 
 
 @user_main_router.message(RegistrationStates.waiting_for_more)

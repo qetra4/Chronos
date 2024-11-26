@@ -29,6 +29,16 @@ def tell_info_kb(user_telegram_id: int):
     return keyboard
 
 
+def period_kb(user_telegram_id: int):
+    kb_list = [
+        [KeyboardButton(text="Вчера"), KeyboardButton(text="Завтра")],
+        [KeyboardButton(text="За выбранную мной дату")],
+        [KeyboardButton(text="По выбранный мной день включительно")]
+    ]
+    keyboard = ReplyKeyboardMarkup(keyboard=kb_list, resize_keyboard=True, one_time_keyboard=True)
+    return keyboard
+
+
 async def objects_kb(user_telegram_id: int) -> ReplyKeyboardMarkup:
     await pg_manager.connect()
     try:

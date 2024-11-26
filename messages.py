@@ -43,6 +43,10 @@ know_extra = '''
 Эта работа была дополнительная?
 '''
 
+know_period = '''
+Укажи, за какой период времени ты хочешь ввести данные?
+'''
+
 goodbye = '''
 Замечательно, я всё записал. Спасибо за уделенное время!
 '''
@@ -61,6 +65,10 @@ banned_message = '''
 
 intention_message = '''
 Расскажешь, что делал сегодня? Можешь отказаться и заполнить позже, тогда нужно будет только указать причину, почему.
+'''
+
+intention_not_today = '''
+Расскажешь, что делал? Можешь отказаться, тогда нужно будет только указать причину, почему.
 '''
 
 why_not = '''
@@ -155,11 +163,13 @@ MESSAGES = {
     'know_notes': know_notes,
     'know_more': know_more,
     'know_extra': know_extra,
+    'know_period': know_period,
     'goodbye': goodbye,
     'user_pass': user_pass,
     'wrong_answer': wrong_answer,
     'banned_message': banned_message,
     'intention_message': intention_message,
+    'intention_not_today': intention_not_today,
     'why_not': why_not,
     'notifications_time': notifications_time,
     'got_hours': got_hours,

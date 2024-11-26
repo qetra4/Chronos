@@ -5,28 +5,13 @@ from handlers.states import RegistrationStates
 from messages import MESSAGES
 from keyboards import *
 from decouple import config
+from datetime import datetime
 
 new_user_router = Router()
 
 
 @new_user_router.message(F.text == "/start")
 async def start_command_handler(message: Message, state: FSMContext):
-    await pg_manager.connect()
-    is_user_banned = await pg_manager.is_user_banned(user_id=message.from_user.id)
-    if not is_user_banned:
-        user_info = await pg_manager.get_user_data(user_id=message.from_user.id, table_name='users')
-        if user_info:
-            await message.answer(MESSAGES['hello'])
-            await message.answer(MESSAGES['intention_message'], reply_markup=tell_info_kb(message.from_user.id))
-            await state.set_state(RegistrationStates.waiting_for_info)
-        else:
-            await message.answer(MESSAGES['user_pass'])
-            await state.set_state(RegistrationStates.waiting_for_password)
-    await pg_manager.close()
-
-
-@new_user_router.message(F.text == "/choose_date_to_answer")
-async def choose_date_to_answer_command_handler(message: Message, state: FSMContext):
     await pg_manager.connect()
     is_user_banned = await pg_manager.is_user_banned(user_id=message.from_user.id)
     if not is_user_banned:
@@ -119,6 +104,8 @@ async def get_role_handler(message: Message, state: FSMContext):
         await message.answer(f"Спасибо, {user_name}! Твоя роль '{user_role}' сохранена.")
         keyboard = await objects_kb(message.from_user.id)
         await message.answer(MESSAGES['know_object'], reply_markup=keyboard)
+        today = datetime.now().date()
+        await state.update_data(user_date=today)
         await state.set_state(RegistrationStates.waiting_for_object)
     except Exception as e:
         await message.answer(f"Произошла ошибка при создании object keyboard {e}")
