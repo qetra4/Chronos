@@ -16,6 +16,7 @@ async def schedule_user_notifications(bot: Bot, pg_manager: PostgresHandler):
     scheduler = AsyncIOScheduler(timezone="UTC")
     async with pg_manager.pool.acquire() as connection:
         today_date = datetime.now().date()
+        await pg_manager.create_notifications_table()
         user_data = await connection.fetch("SELECT user_id, hour, minutes FROM notifications")
         for record in user_data:
             is_record_user_today = await pg_manager.is_user_record_today(record["user_id"], today_date)
@@ -49,9 +50,9 @@ async def send_daily_notifications(bot: Bot, pg_manager: PostgresHandler):
 
 
 async def setup_scheduler(bot: Bot, pg_manager: PostgresHandler):
-    """Set up all scheduled tasks."""
-    scheduler = AsyncIOScheduler(timezone="UTC")
 
+    await pg_manager.create_notifications_table()
+    scheduler = AsyncIOScheduler(timezone="UTC")
     await schedule_user_notifications(bot, pg_manager)
 
     scheduler.add_job(

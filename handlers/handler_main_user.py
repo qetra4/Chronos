@@ -14,7 +14,7 @@ async def get_info_handler(message: Message, state: FSMContext):
     user_info = message.text
     await state.update_data(user_info=user_info)
     if user_info == 'Да, расскажу':
-        keyboard = await objects_kb(message.from_user.id)
+        keyboard = await user_objects_kb(message.from_user.id)
         await message.answer(MESSAGES['know_object'], reply_markup=keyboard)
         await state.set_state(RegistrationStates.waiting_for_object)
     else:
@@ -149,6 +149,6 @@ async def waiting_for_same_object(message: Message, state: FSMContext):
         await message.answer(MESSAGES['know_system'], reply_markup=keyboard)
         await state.set_state(RegistrationStates.waiting_for_system)
     else:
-        keyboard = await objects_kb(message.from_user.id)
+        keyboard = await user_objects_kb(message.from_user.id)
         await message.answer(MESSAGES['know_object'], reply_markup=keyboard)
         await state.set_state(RegistrationStates.waiting_for_object)

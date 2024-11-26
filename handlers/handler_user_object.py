@@ -47,7 +47,7 @@ async def get_obj_what_to_do(message: types.Message, state: FSMContext):
         await pg_manager.connect()
         count_objects = await pg_manager.count_records(table_name='objects')
         await pg_manager.close()
-        if count_objects == 1:
+        if count_objects < 2:
             await message.answer(MESSAGES['user_obj_delete_false'], reply_markup=types.ReplyKeyboardRemove())
         else:
             keyboard = await user_objects_kb(message.from_user.id)
@@ -86,7 +86,6 @@ async def delete_button_handler(message: Message, state: FSMContext):
     user_id = message.from_user.id
     await state.update_data(object_name=object_name)
     await pg_manager.connect()
-    print(user_id, object_name)
     await pg_manager.delete_data(table_name='user_keyboard',
                                  where_dict={"user_id": user_id, 'object_name': object_name})
     await pg_manager.close()
