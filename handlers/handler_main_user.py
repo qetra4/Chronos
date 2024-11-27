@@ -57,21 +57,19 @@ async def get_info_handler(message: types.Message, state: FSMContext):
     except ValueError:
         await message.answer("Некорректный формат даты. Пожалуйста, используйте ДД-ММ-ГГГГ.")
 
-'''
+
 @user_main_router.message(RegistrationStates.waiting_for_date_period)
-async def get_info_handler(message: Message, state: FSMContext):
-    user_info = message.text
-    await state.update_data(user_info=user_info)
-    if user_info == 'Да, расскажу':
-        keyboard = await user_objects_kb(message.from_user.id)
-        await message.answer(MESSAGES['know_object'], reply_markup=keyboard)
-        today = datetime.now().date()
-        await state.update_data(user_today=today)
-        await state.set_state(RegistrationStates.waiting_for_object)
-    else:
-        await message.answer(MESSAGES['why_not'], reply_markup=types.ReplyKeyboardRemove())
-        await state.set_state(RegistrationStates.waiting_for_notes)
-'''
+async def get_date_period_handler(message: Message, state: FSMContext):
+    date_fill = message.text
+    try:
+        date_fill = datetime.strptime(date_fill, '%d-%m-%Y').date()
+        await state.update_data(user_till_date=date_fill)
+        print("date_fill", date_fill)
+        await message.answer(MESSAGES['intention_not_today'], reply_markup=tell_info_kb(message.from_user.id))
+        await state.set_state(RegistrationStates.waiting_for_info)
+    except ValueError:
+        await message.answer("Некорректный формат даты. Пожалуйста, используйте ДД-ММ-ГГГГ.")
+
 
 @user_main_router.message(RegistrationStates.waiting_for_info)
 async def get_info_handler(message: Message, state: FSMContext):
@@ -84,6 +82,8 @@ async def get_info_handler(message: Message, state: FSMContext):
         await state.update_data(user_today=today)
         await state.set_state(RegistrationStates.waiting_for_object)
     else:
+        today = datetime.now().date()
+        await state.update_data(user_today=today)        
         await message.answer(MESSAGES['why_not'], reply_markup=types.ReplyKeyboardRemove())
         await state.set_state(RegistrationStates.waiting_for_notes)
 
@@ -165,25 +165,41 @@ async def get_notes_handler(message: Message, state: FSMContext):
     user_type_of_work = user_data.get('user_type_of_work')
     user_extra = user_data.get('user_extra')
     user_spent_time = user_data.get('user_spent_time')
+    user_till_date = user_data.get('user_till_date')
+    print(user_till_date)
     await pg_manager.connect()
     await pg_manager.create_table_records()
     if user_date is None:
         user_date = today
+
+    if user_till_date:
+        dates = []
+        current_date = today
+        while current_date <= user_till_date:
+            print('yes', current_date, user_till_date)
+            if current_date.weekday() < 5:
+                print('append', current_date)
+                dates.append(current_date)
+            current_date += timedelta(days=1)
+    else:
+        dates = [user_date]
     try:
-        await pg_manager.insert_data(
-            table_name="records",
-            records_data={
-                "user_id": user_id,
-                "object": user_object,
-                "system": user_system,
-                "subsystem": user_subsystem,
-                "work_type": user_type_of_work,
-                "spent_time": user_spent_time,
-                "extra": user_extra,
-                "date": user_date,
-                "notes": user_notes
+        for record_date in dates:
+            await pg_manager.insert_data(
+                table_name='records',
+                records_data={
+                    "user_id": user_id,
+                    "object": user_object,
+                    "system": user_system,
+                    "subsystem": user_subsystem,
+                    "work_type": user_type_of_work,
+                    "spent_time": user_spent_time,
+                    "extra": user_extra,
+                    "date": record_date,
+                    "notes": user_notes
             }
-        )
+            )
+
     except Exception as e:
         await message.answer(f"Произошла ошибка при сохранении данных: {e}")
 
