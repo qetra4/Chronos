@@ -150,6 +150,14 @@ user_obj_delete_false = '''
 Удалять больше нечего! Последнюю кнопку уничтожить не дам.
 '''
 
+choose_date = '''
+За какой день будет информация? Введи в формате ДД-ММ-ГГГГ.
+'''
+
+choose_date_period = '''
+По какой денб включительно будет информация? Введи в формате ДД-ММ-ГГГГ.
+'''
+
 
 MESSAGES = {
     'know_name': know_name,
@@ -189,4 +197,6 @@ MESSAGES = {
     'user_obj_add_false': user_obj_add_false,
     'user_obj_delete_true': user_obj_delete_true,
     'user_obj_delete_false': user_obj_delete_false,
+    'choose_date': choose_date,
+    'choose_date_period': choose_date_period,
 }

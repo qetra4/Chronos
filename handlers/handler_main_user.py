@@ -39,11 +39,39 @@ async def get_info_handler(message: Message, state: FSMContext):
         await message.answer(MESSAGES['intention_not_today'], reply_markup=tell_info_kb(message.from_user.id))
         await state.set_state(RegistrationStates.waiting_for_info)
     elif user_info == 'За выбранную мной дату':
-        date_fill = "no"
+        await message.answer(MESSAGES['choose_date'])
+        await state.set_state(RegistrationStates.waiting_for_date)
     elif user_info == 'По выбранный мной день включительно':    
-        date_fill = "no-no"
-    print(date_fill)
+        await message.answer(MESSAGES['choose_date_period'])
+        await state.set_state(RegistrationStates.waiting_for_date_period)
 
+
+@user_main_router.message(RegistrationStates.waiting_for_date)
+async def get_info_handler(message: types.Message, state: FSMContext):
+    date_fill = message.text
+    try:
+        date_fill = datetime.strptime(date_fill, '%d-%m-%Y').date()
+        await state.update_data(user_date=date_fill)
+        await message.answer(MESSAGES['intention_not_today'], reply_markup=tell_info_kb(message.from_user.id))
+        await state.set_state(RegistrationStates.waiting_for_info)
+    except ValueError:
+        await message.answer("Некорректный формат даты. Пожалуйста, используйте ДД-ММ-ГГГГ.")
+
+'''
+@user_main_router.message(RegistrationStates.waiting_for_date_period)
+async def get_info_handler(message: Message, state: FSMContext):
+    user_info = message.text
+    await state.update_data(user_info=user_info)
+    if user_info == 'Да, расскажу':
+        keyboard = await user_objects_kb(message.from_user.id)
+        await message.answer(MESSAGES['know_object'], reply_markup=keyboard)
+        today = datetime.now().date()
+        await state.update_data(user_today=today)
+        await state.set_state(RegistrationStates.waiting_for_object)
+    else:
+        await message.answer(MESSAGES['why_not'], reply_markup=types.ReplyKeyboardRemove())
+        await state.set_state(RegistrationStates.waiting_for_notes)
+'''
 
 @user_main_router.message(RegistrationStates.waiting_for_info)
 async def get_info_handler(message: Message, state: FSMContext):
@@ -139,7 +167,8 @@ async def get_notes_handler(message: Message, state: FSMContext):
     user_spent_time = user_data.get('user_spent_time')
     await pg_manager.connect()
     await pg_manager.create_table_records()
-
+    if user_date is None:
+        user_date = today
     try:
         await pg_manager.insert_data(
             table_name="records",
