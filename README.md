@@ -1,8 +1,9 @@
 # Chronos
-Tg-bot written with aiogram3. Used to collect statistics data about implementation activity.
-It supports authorization, setting personal time for notifications, setting personal keyboard, secret allow-password for new users, admin menu.
+Tg-bot written with aiogram3. Used to collect statistics data about implementation activity. It supports: <br>-
+Authorization <br>- Setting personal time for notifications <br>- Setting personal keyboard <br>- Secret allow-password for new users <br>- Admin menu <br>-
+Input values for different days and periods of time <br>- Admin edit menu for user keyboards <br>
+The bot can send DB tables and plots based on them to its admins. <br>
 Also it blocks users who can't write the bot password thrice and doesn't let casual regged users open the admin panel.
-The bot can send DB tables and plots based on them to its admins. Also admins can change keyboards items for their users.
 
 ## Requirements
 To start the project you will need the following:
