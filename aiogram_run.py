@@ -1,6 +1,6 @@
 import asyncio
 from create_bot import bot, dp
-from scheduler import setup_scheduler
+from scheduler import setup_scheduler, setup_scheduler_backup
 from create_bot import pg_manager
 from run import database_open
 from handlers.handler_main_user import user_main_router
@@ -19,6 +19,7 @@ async def main():
     await database_open(pg_manager)
     await pg_manager.setup_pool()
     await setup_scheduler(bot, pg_manager)
+    await setup_scheduler_backup(bot, pg_manager)
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
     await pg_manager.pool.close()

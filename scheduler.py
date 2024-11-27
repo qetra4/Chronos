@@ -4,6 +4,8 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from datetime import datetime
 from aiogram import Bot
+import subprocess, os
+from decouple import config
 
 
 async def send_notification(chat_id):
@@ -73,4 +75,32 @@ async def setup_scheduler(bot: Bot, pg_manager: PostgresHandler):
         args=[bot, pg_manager]
     )
 
+    scheduler.start()
+
+async def backup_database():
+    now = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    directory = config('DIRECTORY')
+    backup_file = os.path.join(directory, f"backup_{now}.sql")
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    os.environ['PGPASSWORD'] = '12345'
+    command = [
+        "pg_dump",
+        "--host=localhost",
+        "--port=5432",
+        "--username=postgres",
+        "--file", backup_file,
+        "--format=plain", 
+        "postgres"
+    ]
+    try:
+        result = subprocess.run(command, check=True, text=True, capture_output=True)
+        print(f"Бэкап успешно создан: {backup_file}")
+    except subprocess.CalledProcessError as e:
+        print(f"Ошибка при создании бэкапа: {e.stderr}")
+
+
+async def setup_scheduler_backup(bot: Bot, pg_manager: PostgresHandler):
+    scheduler = AsyncIOScheduler()
+    scheduler.add_job(backup_database, "cron", hour=23, minute=00)
     scheduler.start()
