@@ -155,7 +155,6 @@ async def get_spent_time_handler(message: Message, state: FSMContext):
 @user_main_router.message(RegistrationStates.waiting_for_notes)
 async def get_notes_handler(message: Message, state: FSMContext):
     user_id = message.from_user.id
-    user_notes = message.text
     user_data = await state.get_data()
     user_date = user_data.get('user_date')
     today = user_data.get('user_today')
@@ -165,7 +164,11 @@ async def get_notes_handler(message: Message, state: FSMContext):
     user_type_of_work = user_data.get('user_type_of_work')
     user_extra = user_data.get('user_extra')
     user_spent_time = user_data.get('user_spent_time')
-    user_till_date = user_data.get('user_till_date')
+    user_till_date = user_data.get('user_till_date')    
+    user_notes = message.text
+    if user_object == 'Прочее' and user_system == 'Прочее' and user_type_of_work == 'Прочее' and user_notes == '-':
+        await message.answer("Вы не ввели никакой уточнящей информации к проделанной работе, так что комментарий обязателен.")
+        return
     print(user_till_date)
     await pg_manager.connect()
     await pg_manager.create_table_records()
