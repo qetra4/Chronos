@@ -1,7 +1,7 @@
 # Chronos
 Tg-bot written with aiogram3. Used to collect statistics data about implementation activity. It supports: <br>-
-Authorization <br>- Setting personal time for notifications <br>- Setting personal keyboard <br>- Secret allow-password for new users <br>- Admin menu <br>-
-Input values for different days and periods of time <br>- Admin edit menu for user keyboards <br>
+Authorization <br>- Setting personal time for notifications <br>- Setting personal keyboard <br>- Secret allow-password for new users <br>-
+Input values for different days and periods of time <br>- Admin edit menu for user keyboards <br>- Automated backups to certain directory <br>
 The bot can send DB tables and plots based on them to its admins. <br>
 Also it blocks users who can't write the bot password thrice and doesn't let casual regged users open the admin panel.
 
@@ -31,6 +31,7 @@ TOKEN=your_bot_token
 ADMINS=admin1_tg_id, admin2_tg_id
 ROOT_PASS=234234g531KKK33
 PG_LINK=postgresql://username:password@host:port/dbname
+DIRECTORY=your_directory
 ```
 Substitute your own data. By the way, you need to find out your telegram ID, create a bot token and deploy a database.
 
