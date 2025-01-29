@@ -32,7 +32,11 @@ know_spent_time = '''
 '''
 
 know_notes = '''
-Есть ли какие-то комментарии к проделанной работе? Если нет, отправь прочерк.
+Есть ли какие-то комментарии к проделанной работе?
+'''
+
+what_notes = '''
+Напиши :)
 '''
 
 know_more = '''
@@ -199,4 +203,5 @@ MESSAGES = {
     'user_obj_delete_false': user_obj_delete_false,
     'choose_date': choose_date,
     'choose_date_period': choose_date_period,
+    'what_notes': what_notes,
 }

@@ -5,6 +5,7 @@ from handlers.states import RegistrationStates
 from messages import MESSAGES
 from keyboards import *
 from datetime import datetime, timedelta
+from functions import func_main
 
 user_main_router = Router()
 
@@ -146,10 +147,35 @@ async def get_spent_time_handler(message: Message, state: FSMContext):
     except ValueError:
         await message.answer("Пожалуйста, введите корректное число часов. (Число от 1 до 12)")
         return
-
     await state.update_data(user_spent_time=user_spent_time)
-    await message.answer(MESSAGES['know_notes'])
-    await state.set_state(RegistrationStates.waiting_for_notes)
+    await message.answer(MESSAGES['know_notes'],  reply_markup=yes_no_kb(message.from_user.id))
+    await state.set_state(RegistrationStates.waiting_for_if_notes)    
+
+
+@user_main_router.message(RegistrationStates.waiting_for_if_notes)
+async def get_if_notes(message: Message, state: FSMContext):
+    user_if_notes = message.text
+
+    if user_if_notes == 'Да':
+        await message.answer(MESSAGES['what_notes'])
+        await state.set_state(RegistrationStates.waiting_for_notes)
+    else:
+        user_id = message.from_user.id
+        user_data = await state.get_data()
+        user_date = user_data.get('user_date')
+        today = user_data.get('user_today')
+        user_object = user_data.get('user_object')
+        user_notes = "-"
+        await state.update_data(user_notes=user_notes)
+        await func_main.write_notes_handler(user_id, state)
+        await state.update_data(user_notes=user_notes)    
+        if (user_object is not None) and (user_date == today):
+            await message.answer(MESSAGES['know_more'],
+                                reply_markup=yes_no_kb(message.from_user.id))
+            await state.set_state(RegistrationStates.waiting_for_more)
+        else:
+            await state.clear()
+            await message.answer(MESSAGES['goodbye'], reply_markup=types.ReplyKeyboardRemove())
 
 
 @user_main_router.message(RegistrationStates.waiting_for_notes)
@@ -160,52 +186,13 @@ async def get_notes_handler(message: Message, state: FSMContext):
     today = user_data.get('user_today')
     user_object = user_data.get('user_object')
     user_system = user_data.get('user_system')
-    user_subsystem = user_data.get('user_subsystem')
     user_type_of_work = user_data.get('user_type_of_work')
-    user_extra = user_data.get('user_extra')
-    user_spent_time = user_data.get('user_spent_time')
-    user_till_date = user_data.get('user_till_date')    
     user_notes = message.text
+    await state.update_data(user_notes=user_notes)
     if user_object == 'Прочее' and user_system == 'Прочее' and user_type_of_work == 'Прочее' and user_notes == '-':
         await message.answer("Вы не ввели никакой уточнящей информации к проделанной работе, так что комментарий обязателен.")
         return
-    print(user_till_date)
-    await pg_manager.connect()
-    await pg_manager.create_table_records()
-    if user_date is None:
-        user_date = today
-
-    if user_till_date:
-        dates = []
-        current_date = today
-        while current_date <= user_till_date:
-            print('yes', current_date, user_till_date)
-            if current_date.weekday() < 5:
-                print('append', current_date)
-                dates.append(current_date)
-            current_date += timedelta(days=1)
-    else:
-        dates = [user_date]
-    try:
-        for record_date in dates:
-            await pg_manager.insert_data(
-                table_name='records',
-                records_data={
-                    "user_id": user_id,
-                    "object": user_object,
-                    "system": user_system,
-                    "subsystem": user_subsystem,
-                    "work_type": user_type_of_work,
-                    "spent_time": user_spent_time,
-                    "extra": user_extra,
-                    "date": record_date,
-                    "notes": user_notes
-            }
-            )
-
-    except Exception as e:
-        await message.answer(f"Произошла ошибка при сохранении данных: {e}")
-
+    await func_main.write_notes_handler(user_id, state)
     if (user_object is not None) and (user_date == today):
         await message.answer(MESSAGES['know_more'],
                              reply_markup=yes_no_kb(message.from_user.id))

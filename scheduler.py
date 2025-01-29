@@ -59,19 +59,19 @@ async def setup_scheduler(bot: Bot, pg_manager: PostgresHandler):
 
     scheduler.add_job(
         send_daily_notifications,
-        CronTrigger(day_of_week="mon-fri", hour=19, minute=00),
+        CronTrigger(day_of_week="mon-fri", hour=16, minute=50),
         args=[bot, pg_manager]
     )
 
     scheduler.add_job(
         send_daily_notifications,
-        CronTrigger(day_of_week="mon-fri", hour=19, minute=25),
+        CronTrigger(day_of_week="mon-fri", hour=16, minute=25),
         args=[bot, pg_manager]
     )
 
     scheduler.add_job(
         send_daily_notifications,
-        CronTrigger(day_of_week="mon-fri", hour=19, minute=50),
+        CronTrigger(day_of_week="mon-fri", hour=17, minute=50),
         args=[bot, pg_manager]
     )
 
@@ -102,5 +102,5 @@ async def backup_database():
 
 async def setup_scheduler_backup(bot: Bot, pg_manager: PostgresHandler):
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(backup_database, "cron", hour=23, minute=00)
+    scheduler.add_job(backup_database, "cron", hour=9, minute=6)
     scheduler.start()

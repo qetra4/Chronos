@@ -32,3 +32,4 @@ class RegistrationStates(StatesGroup):
     waiting_for_period = State()
     waiting_for_date = State()
     waiting_for_date_period = State()
+    waiting_for_if_notes = State()
