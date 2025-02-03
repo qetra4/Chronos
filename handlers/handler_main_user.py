@@ -65,7 +65,6 @@ async def get_date_period_handler(message: Message, state: FSMContext):
     try:
         date_fill = datetime.strptime(date_fill, '%d-%m-%Y').date()
         await state.update_data(user_till_date=date_fill)
-        print("date_fill", date_fill)
         await message.answer(MESSAGES['intention_not_today'], reply_markup=tell_info_kb(message.from_user.id))
         await state.set_state(RegistrationStates.waiting_for_info)
     except ValueError:
@@ -169,6 +168,7 @@ async def get_if_notes(message: Message, state: FSMContext):
         await state.update_data(user_notes=user_notes)
         await func_main.write_notes_handler(user_id, state)
         await state.update_data(user_notes=user_notes)    
+        print(user_object, user_date, today)
         if (user_object is not None) and (user_date == today):
             await message.answer(MESSAGES['know_more'],
                                 reply_markup=yes_no_kb(message.from_user.id))

@@ -20,6 +20,9 @@ async def start_command_handler(message: Message, state: FSMContext):
             await message.answer(MESSAGES['hello'])
             await message.answer(MESSAGES['intention_message'], reply_markup=tell_info_kb(message.from_user.id))
             await state.set_state(RegistrationStates.waiting_for_info)
+            date_fill = (datetime.now().strftime('%d-%m-%Y'))
+            date_fill = datetime.strptime(date_fill, '%d-%m-%Y').date()
+            await state.update_data(user_date=date_fill)
         else:
             await message.answer(MESSAGES['user_pass'])
             await state.set_state(RegistrationStates.waiting_for_password)
