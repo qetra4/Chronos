@@ -8,7 +8,7 @@ Also it blocks users who can't write the bot password thrice and doesn't let cas
 ## Requirements
 To start the project you will need the following:
 
-- **Python+**
+- **Python 3+**
 - **pip**
 - **virtualenv**
 
@@ -29,7 +29,7 @@ pip install -r requirements.txt
 ```
 TOKEN=your_bot_token
 ADMINS=admin1_tg_id, admin2_tg_id
-ROOT_PASS=234234g531KKK33
+ROOT_PASS=set_your_root_pass
 PG_LINK=postgresql://username:password@host:port/dbname
 DIRECTORY=your_directory
 ```
