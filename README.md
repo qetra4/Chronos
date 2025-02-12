@@ -29,7 +29,7 @@ pip install -r requirements.txt
 ```
 TOKEN=your_bot_token
 ADMINS=admin1_tg_id, admin2_tg_id
-ROOT_PASS=234234g531KKK33
+ROOT_PASS=set_your_root_pass
 PG_LINK=postgresql://username:password@host:port/dbname
 DIRECTORY=your_directory
 ```
