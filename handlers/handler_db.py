@@ -222,8 +222,14 @@ class PostgresHandler:
         count = user_data[0][0] if user_data else 0
         return count
     
-    async def get_values_data(self, groupp: str):
-        query = f"""SELECT object, spent_time FROM records"""
+    async def get_obj_data(self):
+        query = f"""SELECT object, sum(spent_time) as hours FROM records GROUP BY object"""
+        user_data = await self.connection.fetch(query)
+        value = dict(user_data) or {}
+        return value
+
+    async def get_extra_data(self):
+        query = f"""SELECT extra, sum(spent_time) as hours FROM records GROUP BY extra"""
         user_data = await self.connection.fetch(query)
         value = dict(user_data) or {}
         return value

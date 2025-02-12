@@ -4,6 +4,7 @@ from handlers.states import RegistrationStates
 from messages import MESSAGES
 from functions.funcs_admin import *
 from functions.func_data import *
+from aiogram.types import InputFile 
 
 admin_router = Router()
 admins = [int(admin_id) for admin_id in config('ADMINS').split(',')]
@@ -185,21 +186,42 @@ async def admin_get_graphic_chose(message: types.Message, state: FSMContext):
     await state.update_data(admin_g_chose=admin_g_chose)
     await pg_manager.connect()
     if admin_g_chose == 'Круговая диаграмма часов работы extra/not extra':
-        await message.answer(MESSAGES['admin_choose_table'], reply_markup=admin_choose_table_kb(message.from_user.id))
-        labels = ['extra', 'not extra']
-        vals = await pg_manager.get_values_data(groupp='extra')
-        await pie_hours_extra(vals, labels)
-        await state.set_state(RegistrationStates.waiting_for_admin_table)
-    elif admin_g_chose == 'Гистограмма часов работы по объектам':
-        data_dict = await pg_manager.get_values_data(groupp='object')
-
+        data_dict = await pg_manager.get_extra_data()
         labels = list(data_dict.keys())
         vals = list(data_dict.values())
+        indexes_to_remove = []
+        for i in range(len(vals)):
+            if labels[i] != 'Да' and labels[i] != "Нет":
+                indexes_to_remove.append(i)
+        print(indexes_to_remove)
+        final_vals = [item for idx, item in enumerate(vals) if idx not in indexes_to_remove]
+        final_labels = [item for idx, item in enumerate(labels) if idx not in indexes_to_remove]   
+        print(final_vals)  
+        print(final_labels)
+        await pie_hours_extra(final_vals, final_labels)
+        await state.set_state(RegistrationStates.waiting_for_admin_table)
+    elif admin_g_chose == 'Гистограмма часов работы по объектам':
+        data_dict = await pg_manager.get_obj_data()
+        labels = list(data_dict.keys())
+        vals = list(data_dict.values())
+        indexes_to_remove = []
         for i in range(len(vals)):
             if vals[i] is None:
-                vals[i] = 0
-        print(labels)
-        print(vals)
-        await hist_hours_by_objects(vals, labels)
+                indexes_to_remove.append(i)
+        final_vals = [item for idx, item in enumerate(vals) if idx not in indexes_to_remove]
+        final_labels = [item for idx, item in enumerate(labels) if idx not in indexes_to_remove]
+        await hist_hours_by_objects(final_vals, final_labels)
+    photo = "C:/Users/kravc/Desktop/media/photos/hronos.jpg"
+    await message.answer_photo(
+        photo=types.FSInputFile(
+            path=photo
+        ), caption='А вот и актуальный график :)',
+        reply_markup=types.ReplyKeyboardRemove()
+    )
     await pg_manager.close()
     await state.clear()
+
+#Часть кода снести в func_data
+#Дизайн табличек
+#Благополучно пердать результат пользователю
+#Не забыть отключить отображение графиков на компе
