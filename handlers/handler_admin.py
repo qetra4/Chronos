@@ -189,28 +189,13 @@ async def admin_get_graphic_chose(message: types.Message, state: FSMContext):
         data_dict = await pg_manager.get_extra_data()
         labels = list(data_dict.keys())
         vals = list(data_dict.values())
-        indexes_to_remove = []
-        for i in range(len(vals)):
-            if labels[i] != 'Да' and labels[i] != "Нет":
-                indexes_to_remove.append(i)
-        print(indexes_to_remove)
-        final_vals = [item for idx, item in enumerate(vals) if idx not in indexes_to_remove]
-        final_labels = [item for idx, item in enumerate(labels) if idx not in indexes_to_remove]   
-        print(final_vals)  
-        print(final_labels)
-        await pie_hours_extra(final_vals, final_labels)
+        await pie_hours_extra(vals, labels)
         await state.set_state(RegistrationStates.waiting_for_admin_table)
     elif admin_g_chose == 'Гистограмма часов работы по объектам':
         data_dict = await pg_manager.get_obj_data()
         labels = list(data_dict.keys())
         vals = list(data_dict.values())
-        indexes_to_remove = []
-        for i in range(len(vals)):
-            if vals[i] is None:
-                indexes_to_remove.append(i)
-        final_vals = [item for idx, item in enumerate(vals) if idx not in indexes_to_remove]
-        final_labels = [item for idx, item in enumerate(labels) if idx not in indexes_to_remove]
-        await hist_hours_by_objects(final_vals, final_labels)
+        await hist_hours_by_objects(vals, labels)
     photo = "C:/Users/kravc/Desktop/media/photos/hronos.jpg"
     await message.answer_photo(
         photo=types.FSInputFile(
@@ -221,7 +206,6 @@ async def admin_get_graphic_chose(message: types.Message, state: FSMContext):
     await pg_manager.close()
     await state.clear()
 
-#Часть кода снести в func_data
 #Дизайн табличек
 #Благополучно пердать результат пользователю
 #Не забыть отключить отображение графиков на компе
