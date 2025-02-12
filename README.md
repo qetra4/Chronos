@@ -8,7 +8,7 @@ Also it blocks users who can't write the bot password thrice and doesn't let cas
 ## Requirements
 To start the project you will need the following:
 
-- **Python+**
+- **Python 3+**
 - **pip**
 - **virtualenv**
 
