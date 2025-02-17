@@ -189,23 +189,18 @@ async def admin_get_graphic_chose(message: types.Message, state: FSMContext):
         data_dict = await pg_manager.get_extra_data()
         labels = list(data_dict.keys())
         vals = list(data_dict.values())
-        await pie_hours_extra(vals, labels)
+        buf = await pie_hours_extra(vals, labels)
         await state.set_state(RegistrationStates.waiting_for_admin_table)
     elif admin_g_chose == 'Гистограмма часов работы по объектам':
         data_dict = await pg_manager.get_obj_data()
         labels = list(data_dict.keys())
         vals = list(data_dict.values())
-        await hist_hours_by_objects(vals, labels)
-    photo = "C:/Users/kravc/Desktop/media/photos/hronos.jpg"
+        buf = await hist_hours_by_objects(vals, labels)
     await message.answer_photo(
-        photo=types.FSInputFile(
-            path=photo
-        ), caption='А вот и актуальный график :)',
+        photo=types.BufferedInputFile(buf.getvalue(), filename="graph.png"),
+        caption='А вот и актуальный график :)',
         reply_markup=types.ReplyKeyboardRemove()
     )
     await pg_manager.close()
     await state.clear()
 
-#Дизайн табличек
-#Благополучно пердать результат пользователю
-#Не забыть отключить отображение графиков на компе

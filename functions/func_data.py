@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from io import BytesIO
 
 
 async def pie_hours_extra(vals, labels):
@@ -25,7 +26,11 @@ async def pie_hours_extra(vals, labels):
     fontdict={"fontsize":14},
     pad=20)
     plt.tight_layout()
-    plt.show()
+    buf = BytesIO()
+    plt.savefig(buf, format='png')
+    buf.seek(0)
+    plt.close()
+    return buf
 
 
 async def hist_hours_by_objects(vals, labels):
@@ -41,4 +46,8 @@ async def hist_hours_by_objects(vals, labels):
     ax.set(ylabel='Часы', title='Распределение человекочасов по объектам')
     ax.bar_label(bar_container, fmt='{:,.0f}')
     plt.tight_layout()
-    plt.show()
+    buf = BytesIO()
+    plt.savefig(buf, format='png')
+    buf.seek(0)
+    plt.close()
+    return buf
