@@ -46,6 +46,74 @@ async def hist_hours_by_objects(vals, labels):
     ax.set(ylabel='Часы', title='Распределение человекочасов по объектам')
     ax.bar_label(bar_container, fmt='{:,.0f}')
     plt.tight_layout()
+    plt.xticks(rotation=45)
+    buf = BytesIO()
+    plt.savefig(buf, format='png')
+    buf.seek(0)
+    plt.close()
+    return buf
+
+
+async def hist_hours_by_systems(vals, labels):
+    plt.rcParams.update({'font.size': 8})
+    indexes_to_remove = []
+    for i in range(len(vals)):
+        if vals[i] is None:
+            indexes_to_remove.append(i)
+    final_vals = [item for idx, item in enumerate(vals) if idx not in indexes_to_remove]
+    final_labels = [item for idx, item in enumerate(labels) if idx not in indexes_to_remove] 
+    fig, ax = plt.subplots()
+    colors = ['skyblue', 'steelblue', 'deepskyblue', 'powderblue',  'cornflowerblue', 'lightskyblue', 'dodgerblue', 'lightcyan']
+    bar_container = ax.bar(final_labels, final_vals, color=colors)
+    ax.set(ylabel='Часы', title='Распределение человекочасов по системам')
+    ax.bar_label(bar_container, fmt='{:,.0f}', fontsize = 10)
+    plt.tight_layout()
+    buf = BytesIO()
+    plt.savefig(buf, format='png')
+    plt.xticks(rotation=45)
+    buf.seek(0)
+    plt.close()
+    return buf
+
+
+async def hist_hours_by_subsystems(vals, labels):
+    indexes_to_remove = []
+    for i in range(len(vals)):
+        if vals[i] is None:
+            indexes_to_remove.append(i)
+    final_vals = [item for idx, item in enumerate(vals) if idx not in indexes_to_remove]
+    final_labels = [item for idx, item in enumerate(labels) if idx not in indexes_to_remove]   
+    for i in range(len(final_vals)):
+        if final_labels[i] is None:
+            final_labels[i] = "Не Умный Дом"
+    fig, ax = plt.subplots()
+    colors = ['skyblue', 'steelblue', 'deepskyblue', 'powderblue',  'cornflowerblue', 'lightskyblue', 'dodgerblue', 'lightcyan']
+    bar_container = ax.bar(final_labels, final_vals, color=colors)
+    ax.set(ylabel='Часы', title='Распределение человекочасов по подсистемам')
+    ax.bar_label(bar_container, fmt='{:,.0f}')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    buf = BytesIO()
+    plt.savefig(buf, format='png')
+    buf.seek(0)
+    plt.close()
+    return buf
+
+
+async def hist_hours_by_types_of_work(vals, labels):
+    indexes_to_remove = []
+    for i in range(len(vals)):
+        if vals[i] is None:
+            indexes_to_remove.append(i)
+    final_vals = [item for idx, item in enumerate(vals) if idx not in indexes_to_remove]
+    final_labels = [item for idx, item in enumerate(labels) if idx not in indexes_to_remove]    
+    fig, ax = plt.subplots()
+    colors = ['skyblue', 'steelblue', 'deepskyblue', 'powderblue',  'cornflowerblue', 'lightskyblue', 'dodgerblue', 'lightcyan']
+    bar_container = ax.bar(final_labels, final_vals, color=colors)
+    ax.set(ylabel='Часы', title='Распределение человекочасов по типам работ')
+    ax.bar_label(bar_container, fmt='{:,.0f}')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
     buf = BytesIO()
     plt.savefig(buf, format='png')
     buf.seek(0)

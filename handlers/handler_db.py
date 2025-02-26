@@ -233,6 +233,24 @@ class PostgresHandler:
         user_data = await self.connection.fetch(query)
         value = dict(user_data) or {}
         return value
+    
+    async def get_systems_data(self):
+        query = f"""SELECT system, sum(spent_time) as hours FROM records GROUP BY system"""
+        user_data = await self.connection.fetch(query)
+        value = dict(user_data) or {}
+        return value    
+    
+    async def get_subsystems_data(self):
+        query = f"""SELECT subsystem, sum(spent_time) as hours FROM records GROUP BY subsystem"""
+        user_data = await self.connection.fetch(query)
+        value = dict(user_data) or {}
+        return value    
+    
+    async def get_types_of_works_data(self):
+        query = f"""SELECT work_type, sum(spent_time) as hours FROM records GROUP BY work_type"""
+        user_data = await self.connection.fetch(query)
+        value = dict(user_data) or {}
+        return value    
 
     async def get_users_and_records_tables(self):
         query = """SELECT full_name, object, system, subsystem, spent_time, work_type, date, notes FROM Records r

@@ -208,7 +208,11 @@ def user_obj_what_to_do(user_telegram_id: int):
 def choose_table_to_show_kb(user_telegram_id: int):
     kb_list = [
         [KeyboardButton(text="Круговая диаграмма часов работы extra/not extra")],
-        [KeyboardButton(text="Гистограмма часов работы по объектам")]
+        [KeyboardButton(text="Гистограмма часов работы по объектам")],
+        [KeyboardButton(text="Гистограмма часов работы по системам")],
+        [KeyboardButton(text="Гистограмма часов работы по подсистемам")],
+        [KeyboardButton(text="Гистограмма часов работы по типам работ")],
     ]
+
     keyboard = ReplyKeyboardMarkup(keyboard=kb_list, resize_keyboard=True, one_time_keyboard=True)
     return keyboard

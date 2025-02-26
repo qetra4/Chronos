@@ -185,22 +185,48 @@ async def admin_get_graphic_chose(message: types.Message, state: FSMContext):
     admin_g_chose = message.text
     await state.update_data(admin_g_chose=admin_g_chose)
     await pg_manager.connect()
+   
     if admin_g_chose == 'Круговая диаграмма часов работы extra/not extra':
         data_dict = await pg_manager.get_extra_data()
         labels = list(data_dict.keys())
         vals = list(data_dict.values())
-        buf = await pie_hours_extra(vals, labels)
-        await state.set_state(RegistrationStates.waiting_for_admin_table)
+        if vals is not None:
+            buf = await pie_hours_extra(vals, labels)
     elif admin_g_chose == 'Гистограмма часов работы по объектам':
         data_dict = await pg_manager.get_obj_data()
         labels = list(data_dict.keys())
         vals = list(data_dict.values())
-        buf = await hist_hours_by_objects(vals, labels)
-    await message.answer_photo(
-        photo=types.BufferedInputFile(buf.getvalue(), filename="graph.png"),
-        caption='А вот и актуальный график :)',
-        reply_markup=types.ReplyKeyboardRemove()
-    )
+        if vals is not None:
+            buf = await hist_hours_by_objects(vals, labels)
+    elif admin_g_chose == 'Гистограмма часов работы по системам':
+        data_dict = await pg_manager.get_systems_data()
+        labels = list(data_dict.keys())
+        vals = list(data_dict.values())
+        if vals is not None:
+            buf = await hist_hours_by_systems(vals, labels)
+    elif admin_g_chose == 'Гистограмма часов работы по подсистемам':
+        data_dict = await pg_manager.get_subsystems_data()
+        labels = list(data_dict.keys())
+        vals = list(data_dict.values())
+        print(vals, labels)
+        if vals is not None:
+            buf = await hist_hours_by_subsystems(vals, labels)
+    elif admin_g_chose == 'Гистограмма часов работы по типам работ':
+        data_dict = await pg_manager.get_types_of_works_data()
+        labels = list(data_dict.keys())
+        vals = list(data_dict.values())
+        if vals is not None:
+            buf = await hist_hours_by_types_of_work(vals, labels)
+
+    await state.set_state(RegistrationStates.waiting_for_admin_table)
+    if vals is not None:     
+        await message.answer_photo(
+            photo=types.BufferedInputFile(buf.getvalue(), filename="graph.png"),
+            caption='А вот и актуальный график :)',
+            reply_markup=types.ReplyKeyboardRemove()
+        )
+    else:
+        await message.answer(MESSAGES['no_info_yet'], reply_markup=types.ReplyKeyboardRemove())
     await pg_manager.close()
     await state.clear()
 

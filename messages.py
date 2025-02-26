@@ -166,6 +166,10 @@ what_table = '''
 Какую таблицу отобразить?
 '''
 
+no_info_yet = '''
+Информации пока недостаточно для построения графика.
+'''
+
 MESSAGES = {
     'know_name': know_name,
     'know_role': know_role,
@@ -208,4 +212,5 @@ MESSAGES = {
     'choose_date_period': choose_date_period,
     'what_notes': what_notes,
     'what_table': what_table,
+    'no_info_yet': no_info_yet,
 }
