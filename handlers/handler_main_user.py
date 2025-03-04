@@ -124,7 +124,7 @@ async def get_subsystem_handler(message: Message, state: FSMContext):
 async def get_type_of_work_handler(message: Message, state: FSMContext):
     user_type_of_work = message.text
     await state.update_data(user_type_of_work=user_type_of_work)
-    await message.answer(MESSAGES['know_extra'], reply_markup=yes_no_kb(message.from_user.id))
+    await message.answer(MESSAGES['know_extra'], reply_markup=yes_no_know_kb(message.from_user.id))
     await state.set_state(RegistrationStates.waiting_for_extra)
 
 

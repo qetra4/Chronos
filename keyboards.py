@@ -19,6 +19,15 @@ def yes_no_kb(user_telegram_id: int):
     return keyboard
 
 
+def yes_no_know_kb(user_telegram_id: int):
+    kb_list = [
+        [KeyboardButton(text="Да"), KeyboardButton(text="Нет")],
+        [KeyboardButton(text="Не знаю")]
+    ]
+    keyboard = ReplyKeyboardMarkup(keyboard=kb_list, resize_keyboard=True, one_time_keyboard=True)
+    return keyboard
+
+
 def tell_info_kb(user_telegram_id: int):
     kb_list = [
         [KeyboardButton(text="Да, расскажу"), KeyboardButton(text="Нет, в другой раз")]
