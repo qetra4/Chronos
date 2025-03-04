@@ -7,9 +7,9 @@ from keyboards import *
 from datetime import datetime, timedelta
 from functions import func_main
 
-user_main_router = Router()
+user_mounter_router = Router()
 
-@user_main_router.message(F.text == "/choose_date_to_answer")
+@user_mounter_router.message(F.text == "/choose_date_to_answer")
 async def start_command_handler(message: Message, state: FSMContext):
     await pg_manager.connect()
     is_user_banned = await pg_manager.is_user_banned(user_id=message.from_user.id)
@@ -17,61 +17,61 @@ async def start_command_handler(message: Message, state: FSMContext):
         user_info = await pg_manager.get_user_data(user_id=message.from_user.id, table_name='users')
         if user_info:
             await message.answer(MESSAGES['know_period'], reply_markup=period_kb(message.from_user.id))
-            await state.set_state(RegistrationStates.waiting_for_period)
+            await state.set_state(RegistrationStates.waiting_for_period_mounter)
         else:
             await message.answer(MESSAGES['user_pass'])
             await state.set_state(RegistrationStates.waiting_for_password)
     await pg_manager.close()
 
 
-@user_main_router.message(RegistrationStates.waiting_for_period)
-async def get_info_handler(message: Message, state: FSMContext):
+@user_mounter_router.message(RegistrationStates.waiting_for_period_mounter)
+async def get_period_handler(message: Message, state: FSMContext):
     user_info = message.text
     if user_info == 'Вчера':
         date_fill = (datetime.now() - timedelta(1)).strftime('%Y-%m-%d')
         date_fill = datetime.strptime(date_fill, '%Y-%m-%d')
         await state.update_data(user_date=date_fill)
         await message.answer(MESSAGES['intention_not_today'], reply_markup=tell_info_kb(message.from_user.id))
-        await state.set_state(RegistrationStates.waiting_for_info)
+        await state.set_state(RegistrationStates.waiting_for_info_mounter)
     elif user_info == 'Завтра':
         date_fill = (datetime.now() + timedelta(1)).strftime('%Y-%m-%d')
         date_fill = datetime.strptime(date_fill, '%Y-%m-%d')
         await state.update_data(user_date=date_fill)
         await message.answer(MESSAGES['intention_not_today'], reply_markup=tell_info_kb(message.from_user.id))
-        await state.set_state(RegistrationStates.waiting_for_info)
+        await state.set_state(RegistrationStates.waiting_for_info_mounter)
     elif user_info == 'За выбранную мной дату':
         await message.answer(MESSAGES['choose_date'])
-        await state.set_state(RegistrationStates.waiting_for_date)
+        await state.set_state(RegistrationStates.waiting_for_date_mounter)
     elif user_info == 'По выбранный мной день включительно':    
         await message.answer(MESSAGES['choose_date_period'])
-        await state.set_state(RegistrationStates.waiting_for_date_period)
+        await state.set_state(RegistrationStates.waiting_for_date_period_mounter)
 
 
-@user_main_router.message(RegistrationStates.waiting_for_date)
-async def get_info_handler(message: types.Message, state: FSMContext):
+@user_mounter_router.message(RegistrationStates.waiting_for_date_mounter)
+async def get_date_handler(message: types.Message, state: FSMContext):
     date_fill = message.text
     try:
         date_fill = datetime.strptime(date_fill, '%d-%m-%Y').date()
         await state.update_data(user_date=date_fill)
         await message.answer(MESSAGES['intention_not_today'], reply_markup=tell_info_kb(message.from_user.id))
-        await state.set_state(RegistrationStates.waiting_for_info)
+        await state.set_state(RegistrationStates.waiting_for_info_mounter)
     except ValueError:
         await message.answer("Некорректный формат даты. Пожалуйста, используйте ДД-ММ-ГГГГ.")
 
 
-@user_main_router.message(RegistrationStates.waiting_for_date_period)
+@user_mounter_router.message(RegistrationStates.waiting_for_date_period_mounter)
 async def get_date_period_handler(message: Message, state: FSMContext):
     date_fill = message.text
     try:
         date_fill = datetime.strptime(date_fill, '%d-%m-%Y').date()
         await state.update_data(user_till_date=date_fill)
         await message.answer(MESSAGES['intention_not_today'], reply_markup=tell_info_kb(message.from_user.id))
-        await state.set_state(RegistrationStates.waiting_for_info)
+        await state.set_state(RegistrationStates.waiting_for_info_mounter)
     except ValueError:
         await message.answer("Некорректный формат даты. Пожалуйста, используйте ДД-ММ-ГГГГ.")
 
 
-@user_main_router.message(RegistrationStates.waiting_for_info)
+@user_mounter_router.message(RegistrationStates.waiting_for_info_mounter)
 async def get_info_handler(message: Message, state: FSMContext):
     user_info = message.text
     await state.update_data(user_info=user_info)
@@ -80,63 +80,63 @@ async def get_info_handler(message: Message, state: FSMContext):
         await message.answer(MESSAGES['know_object'], reply_markup=keyboard)
         today = datetime.now().date()
         await state.update_data(user_today=today)
-        await state.set_state(RegistrationStates.waiting_for_object)
+        await state.set_state(RegistrationStates.waiting_for_object_mounter)
     else:
         today = datetime.now().date()
         await state.update_data(user_today=today)        
         await message.answer(MESSAGES['why_not'], reply_markup=types.ReplyKeyboardRemove())
-        await state.set_state(RegistrationStates.waiting_for_notes)
+        await state.set_state(RegistrationStates.waiting_for_notes_mounter)
 
 
-@user_main_router.message(RegistrationStates.waiting_for_object)
+@user_mounter_router.message(RegistrationStates.waiting_for_object_mounter)
 async def get_object_handler(message: Message, state: FSMContext):
     user_object = message.text
     await state.update_data(user_object=user_object)
     keyboard = await systems_kb(message.from_user.id)
     await message.answer(MESSAGES['know_system'], reply_markup=keyboard)
-    await state.set_state(RegistrationStates.waiting_for_system)
+    await state.set_state(RegistrationStates.waiting_for_system_mounter)
 
 
-@user_main_router.message(RegistrationStates.waiting_for_system)
+@user_mounter_router.message(RegistrationStates.waiting_for_system_mounter)
 async def get_system_handler(message: Message, state: FSMContext):
     user_system = message.text
     await state.update_data(user_system=user_system)
     if user_system == "АУД - Умный дом":
         keyboard = await subsystems_kb(message.from_user.id)
         await message.answer(MESSAGES['know_subsystem'], reply_markup=keyboard)
-        await state.set_state(RegistrationStates.waiting_for_subsystem)
+        await state.set_state(RegistrationStates.waiting_for_subsystem_mounter)
     else:
         keyboard = await types_of_work_kb(message.from_user.id)
         await message.answer(MESSAGES['know_type_of_work'], reply_markup=keyboard)
-        await state.set_state(RegistrationStates.waiting_for_type_of_work)
+        await state.set_state(RegistrationStates.waiting_for_type_of_work_mounter)
 
 
-@user_main_router.message(RegistrationStates.waiting_for_subsystem)
+@user_mounter_router.message(RegistrationStates.waiting_for_subsystem_mounter)
 async def get_subsystem_handler(message: Message, state: FSMContext):
     user_subsystem = message.text
     await state.update_data(user_subsystem=user_subsystem)
     keyboard = await types_of_work_kb(message.from_user.id)
     await message.answer(MESSAGES['know_type_of_work'], reply_markup=keyboard)
-    await state.set_state(RegistrationStates.waiting_for_type_of_work)
+    await state.set_state(RegistrationStates.waiting_for_type_of_work_mounter)
 
 
-@user_main_router.message(RegistrationStates.waiting_for_type_of_work)
+@user_mounter_router.message(RegistrationStates.waiting_for_type_of_work_mounter)
 async def get_type_of_work_handler(message: Message, state: FSMContext):
     user_type_of_work = message.text
     await state.update_data(user_type_of_work=user_type_of_work)
     await message.answer(MESSAGES['know_extra'], reply_markup=yes_no_know_kb(message.from_user.id))
-    await state.set_state(RegistrationStates.waiting_for_extra)
+    await state.set_state(RegistrationStates.waiting_for_extra_mounter)
 
 
-@user_main_router.message(RegistrationStates.waiting_for_extra)
+@user_mounter_router.message(RegistrationStates.waiting_for_extra_mounter)
 async def get_extra_handler(message: Message, state: FSMContext):
     user_extra = message.text
     await state.update_data(user_extra=user_extra)
     await message.answer(MESSAGES['know_spent_time'])
-    await state.set_state(RegistrationStates.waiting_for_spent_time)
+    await state.set_state(RegistrationStates.waiting_for_spent_time_mounter)
 
 
-@user_main_router.message(RegistrationStates.waiting_for_spent_time)
+@user_mounter_router.message(RegistrationStates.waiting_for_spent_time_mounter)
 async def get_spent_time_handler(message: Message, state: FSMContext):
     try:
         user_spent_time = int(message.text)
@@ -148,16 +148,16 @@ async def get_spent_time_handler(message: Message, state: FSMContext):
         return
     await state.update_data(user_spent_time=user_spent_time)
     await message.answer(MESSAGES['know_notes'],  reply_markup=yes_no_kb(message.from_user.id))
-    await state.set_state(RegistrationStates.waiting_for_if_notes)    
+    await state.set_state(RegistrationStates.waiting_for_if_notes_mounter)    
 
 
-@user_main_router.message(RegistrationStates.waiting_for_if_notes)
+@user_mounter_router.message(RegistrationStates.waiting_for_if_notes_mounter)
 async def get_if_notes(message: Message, state: FSMContext):
     user_if_notes = message.text
 
     if user_if_notes == 'Да':
         await message.answer(MESSAGES['what_notes'])
-        await state.set_state(RegistrationStates.waiting_for_notes)
+        await state.set_state(RegistrationStates.waiting_for_notes_mounter)
     else:
         user_id = message.from_user.id
         user_data = await state.get_data()
@@ -172,13 +172,13 @@ async def get_if_notes(message: Message, state: FSMContext):
         if (user_object is not None) and (user_date == today):
             await message.answer(MESSAGES['know_more'],
                                 reply_markup=yes_no_kb(message.from_user.id))
-            await state.set_state(RegistrationStates.waiting_for_more)
+            await state.set_state(RegistrationStates.waiting_for_more_mounter)
         else:
             await state.clear()
             await message.answer(MESSAGES['goodbye'], reply_markup=types.ReplyKeyboardRemove())
 
 
-@user_main_router.message(RegistrationStates.waiting_for_notes)
+@user_mounter_router.message(RegistrationStates.waiting_for_notes_mounter)
 async def get_notes_handler(message: Message, state: FSMContext):
     user_id = message.from_user.id
     user_data = await state.get_data()
@@ -196,13 +196,13 @@ async def get_notes_handler(message: Message, state: FSMContext):
     if (user_object is not None) and (user_date == today):
         await message.answer(MESSAGES['know_more'],
                              reply_markup=yes_no_kb(message.from_user.id))
-        await state.set_state(RegistrationStates.waiting_for_more)
+        await state.set_state(RegistrationStates.waiting_for_more_mounter)
     else:
         await state.clear()
         await message.answer(MESSAGES['goodbye'], reply_markup=types.ReplyKeyboardRemove())
 
 
-@user_main_router.message(RegistrationStates.waiting_for_more)
+@user_mounter_router.message(RegistrationStates.waiting_for_more_mounter)
 async def get_more_handler(message: Message, state: FSMContext):
     user_more = message.text
     await state.update_data(user_more=user_more)
@@ -216,14 +216,14 @@ async def get_more_handler(message: Message, state: FSMContext):
         await state.clear()
 
 
-@user_main_router.message(RegistrationStates.waiting_for_same_object)
+@user_mounter_router.message(RegistrationStates.waiting_for_same_object)
 async def waiting_for_same_object(message: Message, state: FSMContext):
     user_same = message.text
     if user_same == 'Да':
         keyboard = await systems_kb(message.from_user.id)
         await message.answer(MESSAGES['know_system'], reply_markup=keyboard)
-        await state.set_state(RegistrationStates.waiting_for_system)
+        await state.set_state(RegistrationStates.waiting_for_system_mounter)
     else:
         keyboard = await user_objects_kb(message.from_user.id)
         await message.answer(MESSAGES['know_object'], reply_markup=keyboard)
-        await state.set_state(RegistrationStates.waiting_for_object)
+        await state.set_state(RegistrationStates.waiting_for_object_mounter)

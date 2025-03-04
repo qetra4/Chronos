@@ -195,6 +195,11 @@ class PostgresHandler:
         user_data = await self.connection.fetchrow(query, user_id)
         return user_data
 
+    async def get_user_role(self, user_id: int, table_name):
+        query = f"SELECT role FROM {table_name} WHERE user_id = $1"
+        user_role = await self.connection.fetchrow(query, user_id)
+        return user_role
+
     async def get_keyboard_data(self, user_id: int, table_name='user_keyboard'):
         query = f"SELECT * FROM {table_name} WHERE user_id = $1"
         user_data = await self.connection.fetch(query, user_id)

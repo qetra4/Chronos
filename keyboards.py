@@ -128,6 +128,18 @@ async def systems_kb(user_telegram_id: int) -> ReplyKeyboardMarkup:
         await pg_manager.close()
 
 
+async def systems_coder_kb(user_telegram_id: int) -> ReplyKeyboardMarkup:
+    kb_list = [
+        [KeyboardButton(text="Освещение"), KeyboardButton(text="Теплые полы")],
+        [KeyboardButton(text="Видеонаблюдение"), KeyboardButton(text="Шторы")],
+        [KeyboardButton(text="Домофония"), KeyboardButton(text="Протечки")],
+        [KeyboardButton(text="Мультимедия"), KeyboardButton(text="Климат")],
+        [KeyboardButton(text="Прочее (указать свое)")],
+    ]
+    keyboard = ReplyKeyboardMarkup(keyboard=kb_list, resize_keyboard=True, one_time_keyboard=True)
+    return keyboard
+
+
 async def subsystems_kb(user_telegram_id: int) -> ReplyKeyboardMarkup:
     await pg_manager.connect()
     try:
@@ -166,6 +178,16 @@ async def types_of_work_kb(user_telegram_id: int) -> ReplyKeyboardMarkup:
 
     finally:
         await pg_manager.close()
+
+
+async def types_of_work_coder_kb(user_telegram_id: int) -> ReplyKeyboardMarkup:
+    kb_list = [
+        [KeyboardButton(text="Программирование"), KeyboardButton(text="Пусконаладка")],
+        [KeyboardButton(text="Разработка Интерфейса"), KeyboardButton(text="Тестирование")],
+        [KeyboardButton(text="Прочее (указать свое)")],
+    ]
+    keyboard = ReplyKeyboardMarkup(keyboard=kb_list, resize_keyboard=True, one_time_keyboard=True)
+    return keyboard
 
 
 def admin_choose_kb(user_telegram_id: int):

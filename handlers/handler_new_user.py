@@ -17,9 +17,14 @@ async def start_command_handler(message: Message, state: FSMContext):
     if not is_user_banned:
         user_info = await pg_manager.get_user_data(user_id=message.from_user.id, table_name='users')
         if user_info:
+            user_role = await pg_manager.get_user_role(user_id=message.from_user.id, table_name='users')
+            print(user_role)
             await message.answer(MESSAGES['hello'])
             await message.answer(MESSAGES['intention_message'], reply_markup=tell_info_kb(message.from_user.id))
-            await state.set_state(RegistrationStates.waiting_for_info)
+            if str(user_role) == "<Record role='📝 Программист'>":
+                await state.set_state(RegistrationStates.waiting_for_info_coder)
+            else:
+                await state.set_state(RegistrationStates.waiting_for_info_mounter)
             date_fill = (datetime.now().strftime('%d-%m-%Y'))
             date_fill = datetime.strptime(date_fill, '%d-%m-%Y').date()
             await state.update_data(user_date=date_fill)
