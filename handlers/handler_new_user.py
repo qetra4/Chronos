@@ -23,7 +23,6 @@ async def start_command_handler(message: Message, state: FSMContext):
             await message.answer(MESSAGES['intention_message'], reply_markup=tell_info_kb(message.from_user.id))
             if str(user_role) == "<Record role='📝 Программист'>":
                 await state.set_state(RegistrationStates.waiting_for_info_coder)
-                print('Programmist')
             else:
                 await state.set_state(RegistrationStates.waiting_for_info_mounter)
             date_fill = (datetime.now().strftime('%d-%m-%Y'))

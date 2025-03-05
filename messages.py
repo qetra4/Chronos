@@ -170,6 +170,11 @@ no_info_yet = '''
 Информации пока недостаточно для построения графика.
 '''
 
+tell_your_own = '''
+Хорошо. Укажи свой вариант :)
+'''
+
+
 MESSAGES = {
     'know_name': know_name,
     'know_role': know_role,
@@ -213,4 +218,5 @@ MESSAGES = {
     'what_notes': what_notes,
     'what_table': what_table,
     'no_info_yet': no_info_yet,
+    'tell_your_own': tell_your_own,
 }

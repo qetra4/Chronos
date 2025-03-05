@@ -39,6 +39,8 @@ class RegistrationStates(StatesGroup):
     waiting_for_date_period_coder = State()
     waiting_for_if_notes_coder = State()
     waiting_for_same_object_coder = State()
+    waiting_for_his_own_system_coder = State()
+    waiting_for_his_own_type_of_work_coder = State()
 
     waiting_for_object_mounter = State()
     waiting_for_system_mounter = State()

@@ -93,7 +93,6 @@ async def get_info_handler(message: Message, state: FSMContext):
 @user_coder_router.message(RegistrationStates.waiting_for_object_coder)
 async def get_object_handler(message: Message, state: FSMContext):
     user_object = message.text
-    print('Programmist obj')
     await state.update_data(user_object=user_object)
     keyboard = await systems_coder_kb(message.from_user.id)
     await message.answer(MESSAGES['know_system'], reply_markup=keyboard)
@@ -103,7 +102,20 @@ async def get_object_handler(message: Message, state: FSMContext):
 @user_coder_router.message(RegistrationStates.waiting_for_system_coder)
 async def get_system_handler(message: Message, state: FSMContext):
     user_system = message.text
-    await state.update_data(user_system=user_system)
+    if user_system == "Прочее (указать свое)":
+        await message.answer(MESSAGES['tell_your_own'], reply_markup=types.ReplyKeyboardRemove())
+        await state.set_state(RegistrationStates.waiting_for_his_own_system_coder)        
+    else:
+        await state.update_data(user_system=user_system)
+        keyboard = await types_of_work_coder_kb(message.from_user.id)
+        await message.answer(MESSAGES['know_type_of_work'], reply_markup=keyboard)
+        await state.set_state(RegistrationStates.waiting_for_type_of_work_coder)
+
+
+@user_coder_router.message(RegistrationStates.waiting_for_his_own_system_coder)
+async def get_his_own_system_handler(message: Message, state: FSMContext):
+    user_get_his_own_system = message.text
+    await state.update_data(user_system=user_get_his_own_system)
     keyboard = await types_of_work_coder_kb(message.from_user.id)
     await message.answer(MESSAGES['know_type_of_work'], reply_markup=keyboard)
     await state.set_state(RegistrationStates.waiting_for_type_of_work_coder)
@@ -112,7 +124,19 @@ async def get_system_handler(message: Message, state: FSMContext):
 @user_coder_router.message(RegistrationStates.waiting_for_type_of_work_coder)
 async def get_type_of_work_handler(message: Message, state: FSMContext):
     user_type_of_work = message.text
-    await state.update_data(user_type_of_work=user_type_of_work)
+    if user_type_of_work == "Прочее (указать свое)":
+        await message.answer(MESSAGES['tell_your_own'], reply_markup=types.ReplyKeyboardRemove())
+        await state.set_state(RegistrationStates.waiting_for_his_own_type_of_work_coder)        
+    else:
+        await state.update_data(user_type_of_work=user_type_of_work)
+        await message.answer(MESSAGES['know_extra'], reply_markup=yes_no_know_kb(message.from_user.id))
+        await state.set_state(RegistrationStates.waiting_for_extra_coder)
+
+
+@user_coder_router.message(RegistrationStates.waiting_for_his_own_type_of_work_coder)
+async def get_his_own_type_of_work_handler(message: Message, state: FSMContext):
+    user_get_his_own_type_of_work= message.text
+    await state.update_data(user_type_of_work=user_get_his_own_type_of_work)
     await message.answer(MESSAGES['know_extra'], reply_markup=yes_no_know_kb(message.from_user.id))
     await state.set_state(RegistrationStates.waiting_for_extra_coder)
 
@@ -209,7 +233,7 @@ async def get_more_handler(message: Message, state: FSMContext):
 async def waiting_for_same_object_coder(message: Message, state: FSMContext):
     user_same = message.text
     if user_same == 'Да':
-        keyboard = await systems_kb(message.from_user.id)
+        keyboard = await systems_coder_kb(message.from_user.id)
         await message.answer(MESSAGES['know_system'], reply_markup=keyboard)
         await state.set_state(RegistrationStates.waiting_for_system_coder)
     else:
