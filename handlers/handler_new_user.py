@@ -18,7 +18,7 @@ async def start_command_handler(message: Message, state: FSMContext):
         user_info = await pg_manager.get_user_data(user_id=message.from_user.id, table_name='users')
         if user_info:
             user_role = await pg_manager.get_user_role(user_id=message.from_user.id, table_name='users')
-            print(user_role)
+            await state.update_data(user_role=user_role)
             await message.answer(MESSAGES['hello'])
             await message.answer(MESSAGES['intention_message'], reply_markup=tell_info_kb(message.from_user.id))
             if str(user_role) == "<Record role='📝 Программист'>":
@@ -114,7 +114,10 @@ async def get_role_handler(message: Message, state: FSMContext):
         await message.answer(MESSAGES['know_object'], reply_markup=keyboard)
         today = datetime.now().date()
         await state.update_data(user_date=today)
-        await state.set_state(RegistrationStates.waiting_for_object)
+        if str(user_role) == "<Record role='📝 Программист'>":
+            await state.set_state(RegistrationStates.waiting_for_object_coder)
+        else:
+            await state.set_state(RegistrationStates.waiting_for_object_mounter)
     except Exception as e:
         await message.answer(f"Произошла ошибка при создании object keyboard {e}")
         await state.clear()
