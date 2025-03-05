@@ -41,7 +41,7 @@ async def get_period_handler(message: Message, state: FSMContext):
         await state.set_state(RegistrationStates.waiting_for_info_mounter)
     elif user_info == 'За выбранную мной дату':
         await message.answer(MESSAGES['choose_date'])
-        await state.set_state(RegistrationStates.waiting_for_date_mounter)
+        await state.set_state(RegistrationStates.waiting_for_date)
     elif user_info == 'По выбранный мной день включительно':    
         await message.answer(MESSAGES['choose_date_period'])
         await state.set_state(RegistrationStates.waiting_for_date_period_mounter)
@@ -168,7 +168,6 @@ async def get_if_notes(message: Message, state: FSMContext):
         await state.update_data(user_notes=user_notes)
         await func_main.write_notes_handler(user_id, state)
         await state.update_data(user_notes=user_notes)    
-        print(user_object, user_date, today)
         if (user_object is not None) and (user_date == today):
             await message.answer(MESSAGES['know_more'],
                                 reply_markup=yes_no_kb(message.from_user.id))
@@ -210,13 +209,13 @@ async def get_more_handler(message: Message, state: FSMContext):
         await state.update_data(user_subsystem=None)
         await pg_manager.connect()
         await message.answer(MESSAGES['same_object'], reply_markup=yes_no_kb(message.from_user.id))
-        await state.set_state(RegistrationStates.waiting_for_same_object)
+        await state.set_state(RegistrationStates.waiting_for_same_object_mounter)
     else:
         await message.answer(MESSAGES['goodbye'], reply_markup=types.ReplyKeyboardRemove())
         await state.clear()
 
 
-@user_mounter_router.message(RegistrationStates.waiting_for_same_object)
+@user_mounter_router.message(RegistrationStates.waiting_for_same_object_mounter)
 async def waiting_for_same_object(message: Message, state: FSMContext):
     user_same = message.text
     if user_same == 'Да':
