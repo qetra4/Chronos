@@ -208,6 +208,14 @@ def admin_choose_kb_kb(user_telegram_id: int):
     return keyboard
 
 
+def admin_whom_edit_kb(user_telegram_id: int):
+    kb_list = [
+        [KeyboardButton(text="Программистам"), KeyboardButton(text="Монтажникам")]
+    ]
+    keyboard = ReplyKeyboardMarkup(keyboard=kb_list, resize_keyboard=True, one_time_keyboard=True)
+    return keyboard
+
+
 def admin_way_to_edit_kb(user_telegram_id: int):
     kb_list = [
         [KeyboardButton(text="Создать кнопку"), KeyboardButton(text="Удалить кнопку")]

@@ -44,8 +44,8 @@ async def admin_choose_handler(message: types.Message, state: FSMContext):
         await message.answer(MESSAGES['what_table'], reply_markup=choose_table_to_show_kb(message.from_user.id))
         await state.set_state(RegistrationStates.waiting_for_graphic_chose)
     elif admin_info == 'Открой keyboards-редактор':
-        await message.answer(MESSAGES['admin_choose_keyboard'], reply_markup=admin_choose_kb_kb(message.from_user.id))
-        await state.set_state(RegistrationStates.waiting_for_admin_keyboard_choose)
+        await message.answer(MESSAGES['to_whom_edit_kb'], reply_markup=admin_whom_edit_kb(message.from_user.id))
+        await state.set_state(RegistrationStates.waiting_for_admin_to_whom_edit_keyboard)
 
 
 @admin_router.message(RegistrationStates.waiting_for_admin_table)
@@ -68,6 +68,15 @@ async def admin_choose_table_handler(message: types.Message, state: FSMContext):
         await send_table_subsystems(message)
     elif admin_table == 'Таблица Types_of_work':
         await send_table_types_of_work(message)
+
+
+@admin_router.message(RegistrationStates.waiting_for_admin_to_whom_edit_keyboard)
+async def admin_to_whom_edit_keyboard_handler(message: types.Message, state: FSMContext):
+    whom = message.text
+    await state.update_data(whom=whom)
+    await message.answer(MESSAGES['admin_how_to_edit_keyboard'],
+                         reply_markup=admin_way_to_edit_kb(message.from_user.id))
+    await state.set_state(RegistrationStates.waiting_for_way_to_edit_keyboard)
 
 
 @admin_router.message(RegistrationStates.waiting_for_admin_keyboard_choose)

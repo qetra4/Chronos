@@ -174,11 +174,22 @@ tell_your_own = '''
 Хорошо. Укажи свой вариант :)
 '''
 
+to_whom_edit_kb = '''
+Кому будем менять клавиатуру?
+'''
+
 
 MESSAGES = {
+    # Авторизация, привет и пока
     'know_name': know_name,
     'know_role': know_role,
     'hello': hello,
+    'goodbye': goodbye,
+    'user_pass': user_pass,
+    'wrong_answer': wrong_answer,
+    'banned_message': banned_message,
+
+    # Сбор информации
     'know_object': know_object,
     'know_system': know_system,
     'know_spent_time': know_spent_time,
@@ -188,35 +199,40 @@ MESSAGES = {
     'know_more': know_more,
     'know_extra': know_extra,
     'know_period': know_period,
-    'goodbye': goodbye,
-    'user_pass': user_pass,
-    'wrong_answer': wrong_answer,
-    'banned_message': banned_message,
+    'same_object': same_object,
     'intention_message': intention_message,
     'intention_not_today': intention_not_today,
     'why_not': why_not,
+    'tell_your_own': tell_your_own,
+    'what_notes': what_notes,
+    
+    # Общение с администратором
+    'admin_choose_option': admin_choose_option,
+    'admin_choose_table': admin_choose_table,
+    'admin_choose_keyboard': admin_choose_keyboard,
+    'admin_how_to_edit_keyboard': admin_how_to_edit_keyboard,
+    'to_whom_edit_kb': to_whom_edit_kb,
+    'delete_button': delete_button,
+    'create_button': create_button,
+    'what_table': what_table,
+    'no_info_yet': no_info_yet,
+    
+    # Настройка уведомлений
     'notifications_time': notifications_time,
     'got_hours': got_hours,
     'value_error': value_error,
     'diaposon_error_hours': diaposon_error_hours,
     'diaposon_error_minutes': diaposon_error_minutes,
-    'admin_choose_option': admin_choose_option,
-    'admin_choose_table': admin_choose_table,
-    'admin_choose_keyboard': admin_choose_keyboard,
-    'admin_how_to_edit_keyboard': admin_how_to_edit_keyboard,
-    'delete_button': delete_button,
-    'create_button': create_button,
-    'same_object': same_object,
+
+    # Настройка клавиатуры пользователем
     'user_obj_what_to_do': user_obj_what_to_do,
     'user_obj_show': user_obj_show,
     'user_obj_add_true': user_obj_add_true,
     'user_obj_add_false': user_obj_add_false,
     'user_obj_delete_true': user_obj_delete_true,
     'user_obj_delete_false': user_obj_delete_false,
+
+    # Выбор дат для сбора информации
     'choose_date': choose_date,
     'choose_date_period': choose_date_period,
-    'what_notes': what_notes,
-    'what_table': what_table,
-    'no_info_yet': no_info_yet,
-    'tell_your_own': tell_your_own,
 }
