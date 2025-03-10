@@ -9,6 +9,8 @@ async def database_open( pg_manager: PostgresHandler):
     await pg_manager.create_systems_table()
     await pg_manager.create_subsystems_table()
     await pg_manager.create_types_of_works_table()
+    await pg_manager.create_c_types_of_works_table()
+    await pg_manager.create_c_systems_table()
     await pg_manager.create_user_keyboard_table()
     await pg_manager.create_table_records()
     await pg_manager.close()

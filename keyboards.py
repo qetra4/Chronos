@@ -277,8 +277,9 @@ def admin_choose_table_kb(user_telegram_id: int):
     kb_list = [
         [KeyboardButton(text="Таблица Users"), KeyboardButton(text="Таблица Records")],
         [KeyboardButton(text="Таблица Banned Users"), KeyboardButton(text="Таблица Notifications")],
-        [KeyboardButton(text="Таблица Types_of_work"), KeyboardButton(text="Таблица Objects")],
-        [KeyboardButton(text="Таблица Systems"), KeyboardButton(text="Таблица Subsystems")]
+        [KeyboardButton(text="Таблица Subsystems"), KeyboardButton(text="Таблица Objects")],
+        [KeyboardButton(text="Таблица Systems (монтажники)"), KeyboardButton(text="Таблица Systems (прогеры)")],
+        [KeyboardButton(text="Таблица Types_of_work (м)"), KeyboardButton(text="Таблица Types_of_work (п)")]
     ]
     keyboard = ReplyKeyboardMarkup(keyboard=kb_list, resize_keyboard=True, one_time_keyboard=True)
     return keyboard

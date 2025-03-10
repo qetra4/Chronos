@@ -202,6 +202,34 @@ async def send_table_systems(message: types.Message):
         await message.answer("Недостаточно прав.")
 
 
+async def send_table_systems_c(message: types.Message):
+    if is_admin(message.from_user.id):
+        await pg_manager.connect()
+        try:
+            user_data = await pg_manager.get_table('c_systems')
+            headers = ["Systems"]
+            column_widths = [12, 25, 20, 15]
+
+            header_row = (
+                f"{headers[0].ljust(column_widths[3])}"
+            )
+
+            formatted_rows = [
+                f"{str(record['system_name']).ljust(column_widths[0])}"
+                for record in user_data
+            ]
+
+            formatted_data = "\n".join([header_row] + formatted_rows)
+            await message.answer(f"Данные таблицы systems:\n\n```{formatted_data}```", parse_mode="Markdown")
+
+        except Exception as e:
+            await message.answer(f"Ошибка при получении данных таблицы: {e}")
+        finally:
+            await pg_manager.close()
+    else:
+        await message.answer("Недостаточно прав.")
+
+
 async def send_table_subsystems(message: types.Message):
     if is_admin(message.from_user.id):
         await pg_manager.connect()
@@ -235,6 +263,34 @@ async def send_table_types_of_work(message: types.Message):
         await pg_manager.connect()
         try:
             user_data = await pg_manager.get_table('type_of_works')
+            headers = ["Types_of_work"]
+            column_widths = [12, 25, 20, 15]
+
+            header_row = (
+                f"{headers[0].ljust(column_widths[3])}"
+            )
+
+            formatted_rows = [
+                f"{str(record['type_of_work_name']).ljust(column_widths[0])}"
+                for record in user_data
+            ]
+
+            formatted_data = "\n".join([header_row] + formatted_rows)
+            await message.answer(f"Данные таблицы type of works:\n\n```{formatted_data}```", parse_mode="Markdown")
+
+        except Exception as e:
+            await message.answer(f"Ошибка при получении данных таблицы: {e}")
+        finally:
+            await pg_manager.close()
+    else:
+        await message.answer("Недостаточно прав.")
+
+
+async def send_table_types_of_work_c(message: types.Message):
+    if is_admin(message.from_user.id):
+        await pg_manager.connect()
+        try:
+            user_data = await pg_manager.get_table('c_type_of_works')
             headers = ["Types_of_work"]
             column_widths = [12, 25, 20, 15]
 

@@ -62,12 +62,16 @@ async def admin_choose_table_handler(message: types.Message, state: FSMContext):
         await send_table_notifications(message)
     elif admin_table == 'Таблица Objects':
         await send_table_objects(message)
-    elif admin_table == 'Таблица Systems':
+    elif admin_table == 'Таблица Systems (монтажники)':
         await send_table_systems(message)
+    elif admin_table == 'Таблица Systems (прогеры)':
+        await send_table_systems_c(message)
     elif admin_table == 'Таблица Subsystems':
         await send_table_subsystems(message)
-    elif admin_table == 'Таблица Types_of_work':
+    elif admin_table == 'Таблица Types_of_work (м)':
         await send_table_types_of_work(message)
+    elif admin_table == 'Таблица Types_of_work (п)':
+        await send_table_types_of_work_c(message)
 
 
 @admin_router.message(RegistrationStates.waiting_for_admin_to_whom_edit_keyboard)
@@ -107,10 +111,11 @@ async def admin_choose_way_handler(message: types.Message, state: FSMContext):
             await message.answer(MESSAGES['delete_button'], reply_markup=keyboard)
         if admin_keyboard == 'Системы':
             await state.update_data(field_name='system_name')
-            await state.update_data(admin_table='systems')
             if whom == 'Программистам':
+                await state.update_data(admin_table='c_systems')
                 keyboard = await c_systems_kb(message.from_user.id)
             else:
+                await state.update_data(admin_table='systems')
                 keyboard = await m_systems_kb(message.from_user.id)
             await message.answer(MESSAGES['delete_button'], reply_markup=keyboard)
         if admin_keyboard == 'Подсистемы':
@@ -120,10 +125,11 @@ async def admin_choose_way_handler(message: types.Message, state: FSMContext):
             await message.answer(MESSAGES['delete_button'], reply_markup=keyboard)
         if admin_keyboard == 'Тип работы':
             await state.update_data(field_name='type_of_work_name')
-            await state.update_data(admin_table='type_of_works')
             if whom == 'Программистам':
+                await state.update_data(admin_table='c_type_of_works')
                 keyboard = await c_types_of_work_kb(message.from_user.id)
             else:
+                await state.update_data(admin_table='type_of_works')
                 keyboard = await m_types_of_work_kb(message.from_user.id)
             await message.answer(MESSAGES['delete_button'], reply_markup=keyboard)
         await state.set_state(RegistrationStates.waiting_for_delete_button)
@@ -139,6 +145,7 @@ async def admin_create_button_handler(message: types.Message, state: FSMContext)
     await pg_manager.connect()
     admin_data = await state.get_data()
     admin_keyboard = admin_data.get('admin_keyboard')
+    whom = admin_data.get('whom')
     try:
         if admin_keyboard == 'Объекты':
             await pg_manager.create_objects_table()
@@ -149,7 +156,7 @@ async def admin_create_button_handler(message: types.Message, state: FSMContext)
                 }
             )
 
-        elif admin_keyboard == 'Системы':
+        elif admin_keyboard == 'Системы' and whom == 'Монтажникам':
             await pg_manager.create_systems_table()
             await pg_manager.insert_data(
                 table_name="systems",
@@ -157,6 +164,15 @@ async def admin_create_button_handler(message: types.Message, state: FSMContext)
                     "system_name": admin_text,
                 }
             )
+
+        elif admin_keyboard == 'Системы' and whom == 'Программистам':
+            await pg_manager.create_systems_table()
+            await pg_manager.insert_data(
+                table_name="c_systems",
+                records_data={
+                    "system_name": admin_text,
+                }
+            )    
 
         elif admin_keyboard == 'Подсистемы':
             await pg_manager.create_subsystems_table()
@@ -167,7 +183,7 @@ async def admin_create_button_handler(message: types.Message, state: FSMContext)
                 }
             )
 
-        elif admin_keyboard == 'Тип работы':
+        elif admin_keyboard == 'Тип работы' and whom == 'Монтажникам':
             await pg_manager.create_types_of_works_table()
             await pg_manager.insert_data(
                 table_name="type_of_works",
@@ -175,6 +191,15 @@ async def admin_create_button_handler(message: types.Message, state: FSMContext)
                     "type_of_work_name": admin_text,
                 }
             )
+
+        elif admin_keyboard == 'Тип работы' and whom == 'Программистам':
+            await pg_manager.create_types_of_works_table()
+            await pg_manager.insert_data(
+                table_name="c_type_of_works",
+                records_data={
+                    "type_of_work_name": admin_text,
+                }
+            )            
 
         await message.answer("Готово!")
     except Exception as e:
@@ -228,7 +253,6 @@ async def admin_get_graphic_chose(message: types.Message, state: FSMContext):
         data_dict = await pg_manager.get_subsystems_data()
         labels = list(data_dict.keys())
         vals = list(data_dict.values())
-        print(vals, labels)
         if vals is not None:
             buf = await hist_hours_by_subsystems(vals, labels)
     elif admin_g_chose == 'Гистограмма часов работы по типам работ':

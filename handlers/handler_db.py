@@ -87,9 +87,9 @@ class PostgresHandler:
                 minutes INT
              );
              """)
-            print("Table ban created or already exists.")
+            print("Table notifications created or already exists.")
         except Exception as e:
-            print("Error while creating table ban:", e)
+            print("Error while creating table notifications:", e)
 
     async def has_user_set_notifications(self, user_id, today):
         return await self.connection.fetchval("SELECT hour FROM notifications WHERE user_id = $1",
@@ -106,7 +106,7 @@ class PostgresHandler:
              """)
             print("Table user_keyboard created or already exists.")
         except Exception as e:
-            print("Error while creating table ban:", e)
+            print("Error while creating table user_keyboard:", e)
 
     async def create_ban_table(self):
         try:
@@ -139,21 +139,21 @@ class PostgresHandler:
              system_name VARCHAR
              );
              """)
-            print("Table is created or already exists.")
+            print("Table systems is created or already exists.")
         except Exception as e:
-            print("Error while creating table:", e)
+            print("Error while creating systems:", e)
 
     async def create_c_systems_table(self):
         try:
             await self.connection.execute("""
-             CREATE TABLE IF NOT EXISTS systems (
+             CREATE TABLE IF NOT EXISTS c_systems (
              system_id SERIAL PRIMARY KEY,
              system_name VARCHAR
              );
              """)
-            print("Table is created or already exists.")
+            print("Table c_systems created or already exists.")
         except Exception as e:
-            print("Error while creating table:", e)
+            print("Error while creating table c_systems:", e)
 
     async def create_subsystems_table(self):
         try:
@@ -163,9 +163,9 @@ class PostgresHandler:
              subsystem_name VARCHAR
              );
              """)
-            print("Table ban created or already exists.")
+            print("Table subsystems created or already exists.")
         except Exception as e:
-            print("Error while creating table ban:", e)
+            print("Error while creating table subsystems:", e)
 
     async def create_types_of_works_table(self):
         try:
@@ -175,9 +175,23 @@ class PostgresHandler:
              type_of_work_name VARCHAR
              );
              """)
-            print("Table ban created or already exists.")
+            print("Table type_of_works created or already exists.")
         except Exception as e:
-            print("Error while creating table ban:", e)
+            print("Error while creating table type_of_works:", e)
+
+
+    async def create_c_types_of_works_table(self):
+        try:
+            await self.connection.execute("""
+             CREATE TABLE IF NOT EXISTS c_type_of_works (
+             type_of_work_id SERIAL PRIMARY KEY,
+             type_of_work_name VARCHAR
+             );
+             """)
+            print("Table c_type_of_works created or already exists.")
+        except Exception as e:
+            print("Error while creating table c_type_of_works:", e)
+
 
     async def is_user_banned(self, user_id):
         return await self.connection.fetchval("SELECT user_id FROM banned_users WHERE user_id = $1",
