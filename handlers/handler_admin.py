@@ -74,9 +74,9 @@ async def admin_choose_table_handler(message: types.Message, state: FSMContext):
 async def admin_to_whom_edit_keyboard_handler(message: types.Message, state: FSMContext):
     whom = message.text
     await state.update_data(whom=whom)
-    await message.answer(MESSAGES['admin_how_to_edit_keyboard'],
-                         reply_markup=admin_way_to_edit_kb(message.from_user.id))
-    await state.set_state(RegistrationStates.waiting_for_way_to_edit_keyboard)
+    await message.answer(MESSAGES['admin_choose_keyboard'],
+                         reply_markup=admin_choose_kb_kb(message.from_user.id))
+    await state.set_state(RegistrationStates.waiting_for_admin_keyboard_choose)
 
 
 @admin_router.message(RegistrationStates.waiting_for_admin_keyboard_choose)
@@ -92,8 +92,9 @@ async def admin_choose_keyboard_handler(message: types.Message, state: FSMContex
 async def admin_choose_way_handler(message: types.Message, state: FSMContext):
     admin_way = message.text
     await state.update_data(admin_way=admin_way)
+    admin_data = await state.get_data()
+    whom = admin_data.get('whom')
     if admin_way == "Удалить кнопку":
-        admin_data = await state.get_data()
         admin_keyboard = admin_data.get('admin_keyboard')
         if admin_keyboard == 'Объекты':
             keyboard = await objects_kb(message.from_user.id)
