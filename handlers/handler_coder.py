@@ -94,7 +94,7 @@ async def get_info_handler(message: Message, state: FSMContext):
 async def get_object_handler(message: Message, state: FSMContext):
     user_object = message.text
     await state.update_data(user_object=user_object)
-    keyboard = await systems_coder_kb(message.from_user.id)
+    keyboard = await c_systems_kb(message.from_user.id)
     await message.answer(MESSAGES['know_system'], reply_markup=keyboard)
     await state.set_state(RegistrationStates.waiting_for_system_coder)
 
@@ -107,7 +107,7 @@ async def get_system_handler(message: Message, state: FSMContext):
         await state.set_state(RegistrationStates.waiting_for_his_own_system_coder)        
     else:
         await state.update_data(user_system=user_system)
-        keyboard = await types_of_work_coder_kb(message.from_user.id)
+        keyboard = await c_types_of_work_kb(message.from_user.id)
         await message.answer(MESSAGES['know_type_of_work'], reply_markup=keyboard)
         await state.set_state(RegistrationStates.waiting_for_type_of_work_coder)
 
@@ -116,7 +116,7 @@ async def get_system_handler(message: Message, state: FSMContext):
 async def get_his_own_system_handler(message: Message, state: FSMContext):
     user_get_his_own_system = message.text
     await state.update_data(user_system=user_get_his_own_system)
-    keyboard = await types_of_work_coder_kb(message.from_user.id)
+    keyboard = await c_types_of_work_kb(message.from_user.id)
     await message.answer(MESSAGES['know_type_of_work'], reply_markup=keyboard)
     await state.set_state(RegistrationStates.waiting_for_type_of_work_coder)
 

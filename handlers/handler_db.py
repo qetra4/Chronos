@@ -127,9 +127,9 @@ class PostgresHandler:
              object_name VARCHAR
              );
              """)
-            print("Table ban created or already exists.")
+            print("Table is created or already exists.")
         except Exception as e:
-            print("Error while creating table ban:", e)
+            print("Error while creating table:", e)
 
     async def create_systems_table(self):
         try:
@@ -139,9 +139,21 @@ class PostgresHandler:
              system_name VARCHAR
              );
              """)
-            print("Table ban created or already exists.")
+            print("Table is created or already exists.")
         except Exception as e:
-            print("Error while creating table ban:", e)
+            print("Error while creating table:", e)
+
+    async def create_c_systems_table(self):
+        try:
+            await self.connection.execute("""
+             CREATE TABLE IF NOT EXISTS systems (
+             system_id SERIAL PRIMARY KEY,
+             system_name VARCHAR
+             );
+             """)
+            print("Table is created or already exists.")
+        except Exception as e:
+            print("Error while creating table:", e)
 
     async def create_subsystems_table(self):
         try:

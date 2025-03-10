@@ -92,7 +92,7 @@ async def get_info_handler(message: Message, state: FSMContext):
 async def get_object_handler(message: Message, state: FSMContext):
     user_object = message.text
     await state.update_data(user_object=user_object)
-    keyboard = await systems_kb(message.from_user.id)
+    keyboard = await m_systems_kb(message.from_user.id)
     await message.answer(MESSAGES['know_system'], reply_markup=keyboard)
     await state.set_state(RegistrationStates.waiting_for_system_mounter)
 
@@ -106,7 +106,7 @@ async def get_system_handler(message: Message, state: FSMContext):
         await message.answer(MESSAGES['know_subsystem'], reply_markup=keyboard)
         await state.set_state(RegistrationStates.waiting_for_subsystem_mounter)
     else:
-        keyboard = await types_of_work_kb(message.from_user.id)
+        keyboard = await m_types_of_work_kb(message.from_user.id)
         await message.answer(MESSAGES['know_type_of_work'], reply_markup=keyboard)
         await state.set_state(RegistrationStates.waiting_for_type_of_work_mounter)
 
@@ -115,7 +115,7 @@ async def get_system_handler(message: Message, state: FSMContext):
 async def get_subsystem_handler(message: Message, state: FSMContext):
     user_subsystem = message.text
     await state.update_data(user_subsystem=user_subsystem)
-    keyboard = await types_of_work_kb(message.from_user.id)
+    keyboard = await m_types_of_work_kb(message.from_user.id)
     await message.answer(MESSAGES['know_type_of_work'], reply_markup=keyboard)
     await state.set_state(RegistrationStates.waiting_for_type_of_work_mounter)
 
@@ -219,7 +219,7 @@ async def get_more_handler(message: Message, state: FSMContext):
 async def waiting_for_same_object(message: Message, state: FSMContext):
     user_same = message.text
     if user_same == 'Да':
-        keyboard = await systems_kb(message.from_user.id)
+        keyboard = await m_systems_kb(message.from_user.id)
         await message.answer(MESSAGES['know_system'], reply_markup=keyboard)
         await state.set_state(RegistrationStates.waiting_for_system_mounter)
     else:

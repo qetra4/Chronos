@@ -74,8 +74,12 @@ async def admin_choose_table_handler(message: types.Message, state: FSMContext):
 async def admin_to_whom_edit_keyboard_handler(message: types.Message, state: FSMContext):
     whom = message.text
     await state.update_data(whom=whom)
-    await message.answer(MESSAGES['admin_choose_keyboard'],
-                         reply_markup=admin_choose_kb_kb(message.from_user.id))
+    if whom == 'Программистам':
+        await message.answer(MESSAGES['admin_choose_keyboard'],
+                         reply_markup=admin_choose_c_kb_kb(message.from_user.id))
+    else:    
+        await message.answer(MESSAGES['admin_choose_keyboard'],
+                         reply_markup=admin_choose_m_kb_kb(message.from_user.id))
     await state.set_state(RegistrationStates.waiting_for_admin_keyboard_choose)
 
 
@@ -102,9 +106,12 @@ async def admin_choose_way_handler(message: types.Message, state: FSMContext):
             await state.update_data(admin_table='objects')
             await message.answer(MESSAGES['delete_button'], reply_markup=keyboard)
         if admin_keyboard == 'Системы':
-            keyboard = await systems_kb(message.from_user.id)
             await state.update_data(field_name='system_name')
             await state.update_data(admin_table='systems')
+            if whom == 'Программистам':
+                keyboard = await c_systems_kb(message.from_user.id)
+            else:
+                keyboard = await m_systems_kb(message.from_user.id)
             await message.answer(MESSAGES['delete_button'], reply_markup=keyboard)
         if admin_keyboard == 'Подсистемы':
             keyboard = await subsystems_kb(message.from_user.id)
@@ -112,9 +119,12 @@ async def admin_choose_way_handler(message: types.Message, state: FSMContext):
             await state.update_data(admin_table='subsystems')
             await message.answer(MESSAGES['delete_button'], reply_markup=keyboard)
         if admin_keyboard == 'Тип работы':
-            keyboard = await types_of_work_kb(message.from_user.id)
             await state.update_data(field_name='type_of_work_name')
             await state.update_data(admin_table='type_of_works')
+            if whom == 'Программистам':
+                keyboard = await c_types_of_work_kb(message.from_user.id)
+            else:
+                keyboard = await m_types_of_work_kb(message.from_user.id)
             await message.answer(MESSAGES['delete_button'], reply_markup=keyboard)
         await state.set_state(RegistrationStates.waiting_for_delete_button)
     elif admin_way == "Создать кнопку":
